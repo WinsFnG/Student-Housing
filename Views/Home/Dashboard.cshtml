@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div style="max-width: 600px; margin: 80px auto; font-family: Arial, sans-serif;">
+    <h2 style="margin-bottom: 10px;">Welcome</h2>
+    <p style="margin-bottom: 20px;">
+        You are now on the dashboard placeholder. Authentication is not active yet this page is just for testing UI config.
+        </partial>
+    <form asp-action="Logout" asp-controller="Account" method="post">
+        <button type="submit"
+                style="padding:10px 16px; background:black; color:white; border:none; font-weight:bold;">
+            Log out
+        </button>
+    </form>
+
+</div>

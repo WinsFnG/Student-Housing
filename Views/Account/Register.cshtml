@@ -1,0 +1,48 @@
+﻿@model Student_housing.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_Layout";
+}
+
+<div class="auth-page">
+    <div class="auth-card">
+        <h1 class="auth-title">Create account</h1>
+        <p class="auth-subtitle">Fill in your details to get started.</p>
+
+        <form asp-action="Register" asp-controller="Account" method="post" class="auth-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-1"></div>
+
+            <div class="auth-field">
+                <label asp-for="Email" class="auth-label"></label>
+                <input asp-for="Email" class="auth-input" type="email" placeholder="Enter email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="auth-field">
+                <label asp-for="UserName" class="auth-label"></label>
+                <input asp-for="UserName" class="auth-input" placeholder="Choose a username" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
+            <div class="auth-field">
+                <label asp-for="Password" class="auth-label"></label>
+                <input asp-for="Password" class="auth-input" type="password" placeholder="Create a password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="auth-btn">Register</button>
+
+            <p class="auth-switch">
+                Already have an account?
+                <a asp-action="Login" asp-controller="Account" class="auth-link">Login</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
