@@ -47,7 +47,7 @@ body {
 }
 
 .auth-card {
-    background: #020617; 
+    background: #020617; /* color */
     max-width: 420px;
     border-radius: 16px;
     padding: 32px 32px 28px;
@@ -117,7 +117,7 @@ body {
 
 /* ---------- BUTTON ---------- */
 
-.auth-btn {
+.auth-btn { 
     margin-top: 4px;
     width: 100%;
     padding: 11px;
@@ -165,3 +165,4 @@ body {
 .text-danger {
     font-size: 0.8rem;
 }
+
