@@ -25,7 +25,8 @@
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="auth-btn">Log in</button>
+            <button type="submit" class="auth-btn">Log in</button> <!-- button glow animation being set -->
+
 
             <p class="auth-switch">
                 Don’t have an account?
@@ -40,3 +41,4 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
