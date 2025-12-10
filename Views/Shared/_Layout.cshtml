@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -37,12 +37,6 @@
                             <a class="nav-link text-dark"
                                asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-
                     </ul>
                 </div>
 
@@ -50,22 +44,22 @@
         </nav>
     </header>
 
-    
+    @RenderBody()
     <main role="main" class="container-fluid p-0">
-        @RenderBody()
+       
     </main>
-
-    <footer class="border-top text-muted mt-4">
-        <div class="container py-3">
-            © @DateTime.Now.Year - Student_housing -
-            <a asp-controller="Home" asp-action="Privacy" class="text-muted">Privacy</a>
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - Student_housing -
+            <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 
-    <!-- JS -->
+    <!-- POP UP LOGIC -- JS: jQuery first, then Bootstrap, then view-specific sections -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
+    @RenderSection("Modals", required: false)
     @RenderSection("Scripts", required: false)
-
 </body>
 </html>
