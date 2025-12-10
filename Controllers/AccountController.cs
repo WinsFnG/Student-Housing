@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Student_housing.Models;
 
 namespace Student_housing.Controllers
@@ -16,11 +16,11 @@ namespace Student_housing.Controllers
         [HttpPost]
         public IActionResult Login(LogInViewModel model)
         {
-            if (!string.IsNullOrWhiteSpace(model.UserName) &&
+            if (!string.IsNullOrWhiteSpace(model.Username) &&
                 !string.IsNullOrWhiteSpace(model.Password))
             {
-                // For now just go to dashboard no real auth yet
-                return RedirectToAction("Dashboard", "Home");
+                // Here you put your Main/Index page's name so it goes there after logging in
+                return RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError(string.Empty, "Please enter a username and password.");
@@ -28,26 +28,38 @@ namespace Student_housing.Controllers
         }
 
         // get acc register
+        // GET: /Account/Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // post acc register
+        // POST: /Account/Register
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
             {
+                // Validation failed - stay on page, do NOT show terms
+                ViewData["ShowTerms"] = "true";
                 return View(model);
             }
 
-            // Later: save to New DB.
-            return RedirectToAction("Login");
+            // TODO HERE: hash password, save user to DB, etc.
+            // var hashed = PasswordHasher.Hash(model.Password);
+            // _context.Users.Add(new User { ... });
+            // _context.SaveChanges();
+
+            // Registration success - show terms modal
+            ViewData["ShowTerms"] = "true";
+
+            // Stay on Register view so the modal can appear
+            return View(model);
         }
-        
-        // TEMPORARY logout action!!!
+
+        // TEMPORARY logout action!!! *This is currently overriden by the goodbye page*
         [HttpPost]
         public IActionResult Logout()
         {
