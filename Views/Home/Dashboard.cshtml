@@ -1,17 +1,15 @@
-﻿@{
-    ViewData["Title"] = "Dashboard";
-}
+<div class="goodbye-container" style="margin-top: 80px; text-align: center; color: white;">
+    <h1 style="font-size: 48px; font-weight: bold;">Goodbye!</h1>
+    <p style="font-size: 20px; margin-top: 15px; opacity: 0.8;">
+        Since you've declined the Terms of Use, your access has been denied!
+        <br />
+        If you change your mind, you're welcome to register again anytime!
+    </p>
 
-<div style="max-width: 600px; margin: 80px auto; font-family: Arial, sans-serif;">
-    <h2 style="margin-bottom: 10px;">Welcome</h2>
-    <p style="margin-bottom: 20px;">
-        You are now on the dashboard placeholder. Authentication is not active yet this page is just for testing UI config.
-        </partial>
-    <form asp-action="Logout" asp-controller="Account" method="post">
-        <button type="submit"
-                style="padding:10px 16px; background:black; color:white; border:none; font-weight:bold;">
-            Log out
-        </button>
-    </form>
-
+    <a href="/Account/Register"
+       style="display: inline-block; margin-top: 35px; padding: 12px 30px;
+              background: #1a73e8; color: white; border-radius: 10px; text-decoration: none;
+              font-size: 18px; box-shadow: 0 0 25px rgba(26,115,232,0.4);">
+        Try Registering Again
+    </a>
 </div>
