@@ -1,1 +1,1 @@
-Here i will be adding editing and fixing all things that are connected to users, authentication methods and back end in general. Almost every line of code I've added as a feature has a comment so you know to get from here.
+Here i will be adding editing and fixing all things that are connected to users, authentication methods and back end in general. Almost every line of code I've added as a feature has a comment so you know what to get from here.
