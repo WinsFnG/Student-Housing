@@ -1,0 +1,94 @@
+﻿@* Views/Shared/TermsOfUse.cshtml *@
+
+<div class="modal fade" id="termsModal" tabindex="-1"
+     aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content privacy-modal">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="termsModalLabel">
+                    Privacy Policy &amp; Terms of Use
+                </h5>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <p class="mb-3">
+                    Welcome! Here is how we handle your data.
+                    No legal spam — just what you actually need to know.
+                </p>
+
+                <h6>1. What data we collect</h6>
+                <ul>
+                    <li>Your email address</li>
+                    <li>Your username</li>
+                    <li>Your password (securely <strong>hashed</strong>, never stored in plain text)</li>
+                </ul>
+
+                <h6>2. What we <strong>do NOT</strong> collect or do!</h6>
+                <ul>
+                    <li>Browsing history</li>
+                    <li>Location tracking</li>
+                    <li>Traffic or device tracking</li>
+                    <li>Third-party sharing or selling of your data</li>
+                    <li>Advertising profiles, no behavioral tracking</li>
+                </ul>
+
+                <h6>3. Why do we store your data?</h6>
+                <ul>
+                    <li>To let you log in securely</li>
+                    <li>To connect your activity to your account</li>
+                    <li>To maintain platform security and prevent abuse</li>
+                </ul>
+
+                <h6>4. How is your password is protected?</h6>
+                <p>
+                    Your password is protected using hashing (SHA-256 or better).
+                    Even we cannot see your password — only you know it!
+                </p>
+
+                <h6>5. How your data is used?</h6>
+                <ul>
+                    <li>Login and authentication.</li>
+                    <li>Displaying your username in the platform.</li>
+                    <li>Optional communication if needed.</li>
+                </ul>
+
+                <p>We NEVER:</p>
+                <ul>
+                    <li>Sell your info</li>
+                    <li>Share it with advertisers</li>
+                    <li>Track your activity outside this app</li>
+                    <li>Use your information for marketing</li>
+                </ul>
+
+                <h6>6. You can:</h6>
+                <ul>
+                    <li>Delete your account whenever you want</li>
+                    <li>Change your email or username</li>
+                    <li>Reset your password</li>
+                </ul>
+
+                <h6>7. Your responsibilities!</h6>
+                <ul>
+                    <li>Don't share your password!</li>
+                    <li>Don't use the platform for harmful or illegal activity</li>
+                    <li>Respect other users</li>
+                </ul>
+
+                <h6>8. Acceptance</h6>
+                <p>
+                    By selecting “Accept”, you agree to these terms and consent to cookies.
+                    If you wish to decline, your account will not be activated!
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="declineTerms">Decline</button>
+                <button type="button" class="btn btn-primary" id="acceptTerms">Accept</button>
+            </div>
+
+        </div>
+    </div>
+</div>
