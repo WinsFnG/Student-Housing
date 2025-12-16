@@ -4,7 +4,7 @@ namespace Student_housing.Models
     public class RegisterViewModel
     {
         [Required]       
-        public string UserName { get; set; } = default!;
+        public string Username { get; set; } = default!;
         [Required]
         public string Email { get; set; } = default!;
         [Required]

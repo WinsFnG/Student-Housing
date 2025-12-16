@@ -7,6 +7,7 @@ namespace Student_housing.PasswordServices
     {
         public static string HashPassword(string password)
         {
+            
             // Creating a SHA256 engine to hash the password
             using (var sha256 = System.Security.Cryptography.SHA256.Create())
             {
@@ -14,6 +15,11 @@ namespace Student_housing.PasswordServices
                 var hashbytes = sha256.ComputeHash(bytes);// This takes the byte representation of the password and runs SHA256 on it.
                 return Convert.ToBase64String(hashbytes);// converting hash byte array to string
             }
+        }
+        public static bool VerifyPassword(string enteredPassword, string storedHash) // Compares entered password with stored hash (for login erorrs)
+        {
+            var enteredHash = HashPassword(enteredPassword);
+            return enteredHash == storedHash;
         }
     }
 }

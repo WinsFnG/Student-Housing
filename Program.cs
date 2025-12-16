@@ -44,25 +44,35 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-
-using (var scope = app.Services.CreateScope())
+if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
     db.Database.Migrate();
+    var cfg = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+    var landlordCfg = cfg.GetSection("SeedUsers:Landlord");
 
-    var landlordUsername = "landlord";
-    var landlordEmail = "landlord@studenthousing.local";
-    var landlordPassword = "Landlord123!"; 
+    var landlordUsername = landlordCfg["Username"];
+    var landlordEmail = landlordCfg["Email"];
+    var landlordPassword = landlordCfg["Password"];
 
-    var hashedPassword = PasswordHasher.HashPassword(landlordPassword);
+    if (string.IsNullOrWhiteSpace(landlordUsername) ||
+        string.IsNullOrWhiteSpace(landlordEmail) ||
+        string.IsNullOrWhiteSpace(landlordPassword))
+    {
+        throw new Exception("SeedUsers:Landlord config is missing or invalid");
+    }
 
     if (!db.Users.Any(u => u.Username == landlordUsername))
     {
+        var hashed = PasswordHasher.HashPassword(landlordPassword);
+
         db.Users.Add(new User
         {
             Username = landlordUsername,
             Email = landlordEmail,
-            PasswordHash = hashedPassword,
+            PasswordHash = hashed,
             Role = "Landlord",
             AcceptedTerms = true,
             IsBanned = false
@@ -70,24 +80,26 @@ using (var scope = app.Services.CreateScope())
 
         db.SaveChanges();
     }
+
+
+
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Home/Error"); // error path
+        app.UseHsts();
+    }
+
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+
+    app.UseRouting();
+
+    app.UseAuthentication(); //(for cookies and sessions later on-not currently active)
+    app.UseAuthorization();// put this in as well pls:)
+
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Account}/{action=Login}/{id?}");
+
+    app.Run();
 }
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error"); // error path
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthentication(); //(for cookies and sessions later on-not currently active)
-app.UseAuthorization();// put this in as well pls:)
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
-
-app.Run();
