@@ -1,1 +1,1 @@
-# If you don't understand a change in code syntax ask with a comment on the specific file. Please dont push codes with errors
+Because of the merge all of the backend is back to 0 i will fix it by the end of the week by then i hope everyone will be done with their part too:)
