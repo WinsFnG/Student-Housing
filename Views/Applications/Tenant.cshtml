@@ -1,2 +1,649 @@
-﻿<h1>Tenant Applications</h1>
-<p>This is the tenant page looks nice right?</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tenants Portal</title>
+
+  
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background: #eef1f5; overflow-x: hidden; }
+
+    
+    .sidebar {
+      position: fixed; top: 0; left: -260px; width: 260px; height: 100vh;
+      background: #f1f4f8; box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+      transition: left 0.3s ease; z-index: 1000; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .sidebar.open { left: 0; }
+    .sidebar-menu { padding-top: 80px; }
+    .sidebar-item { display: flex; align-items: center; gap: 16px; padding: 16px 24px; cursor: pointer; color: #333; font-size: 1rem; }
+    .sidebar-item:hover { background: #e3e9f0; }
+    .sidebar-item.active { background: #e3e9f0; font-weight: 600; }
+    .sidebar-divider { height: 1px; background: #cbd5e1; margin: 12px 0; }
+    .sidebar-footer { padding: 24px; text-align: center; margin-bottom: -100px; }
+    .sidebar-footer img { max-width: 220px; opacity: 0.95; }
+
+    
+    .hero { position: relative; height: 55vh; overflow: hidden; }
+    .hero img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; z-index: 0; }
+    .hero::after {
+      content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: linear-gradient(to bottom, rgba(0,120,130,0.15) 0%, rgba(0,120,130,0.35) 45%, rgba(0,80,90,0.55) 75%, rgba(0,60,70,0.65) 100%);
+    }
+    .hero h1 {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      color: #fff; font-size: 2.5rem; font-weight: 400; z-index: 2; text-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    }
+
+    
+    .top-bar { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; z-index: 2; color: white; }
+    .icon { font-size: 1.6rem; cursor: pointer; position: relative; }
+    .notif { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); }
+    .notif .material-icons-outlined { font-size: 24px; color: white; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; background: url('https://i.pravatar.cc/100') center/cover; border: 2px solid rgba(255,255,255,0.8); cursor: pointer; }
+
+    
+    .menu { margin-top: 40px; padding: 40px 20px 80px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; }
+    .menu-item { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; }
+    .pill { width: 150px; height: 90px; background: #ffffff; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+    .circle { width: 48px; height: 48px; border-radius: 12px; background: #f3f6f9; display: flex; align-items: center; justify-content: center; }
+    .circle .material-icons-outlined { font-size: 26px; color: #2c7da0; }
+
+    
+    .chat { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 50%; background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; }
+
+    
+    #reportsSection, #documentsSection, #cleaningSection, #garbageSection, #eventsSection { display: none; padding: 40px 20px; }
+
+    
+    .backToMenu { margin-bottom: 20px; padding: 8px 12px; border-radius: 8px; border: 1px solid #2c7da0; background: #fff; color: #2c7da0; cursor: pointer; width: fit-content; }
+    .backToMenu:hover { background: #2c7da0; color: #fff; }
+
+    
+    #reportsForm { display: flex; flex-direction: column; gap: 12px; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); max-width: 500px; margin-bottom: 20px; }
+    #reportsForm input, #reportsForm select, #reportsForm textarea, #reportsForm button { padding: 8px 12px; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc; }
+    #reportsForm textarea { resize: vertical; min-height: 80px; }
+    #reportsForm button { background: #2c7da0; color: white; border: none; cursor: pointer; transition: background 0.2s; }
+    #reportsForm button:hover { background: #1b5e77; }
+    .report-list h3 { margin-bottom: 10px; color: #2c7da0; }
+    .report-item { background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 12px; }
+    .report-item .status { font-weight: bold; margin-bottom: 4px; }
+    .report-item.solved .status { color: green; }
+    .report-item.pending .status { color: orange; }
+
+    
+    .document-item { background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .document-item span { font-weight: bold; }
+
+    /* CLEANING & GARBAGE TABLES */
+    .cleaning-table { width: 100%; max-width: 700px; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 16px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .cleaning-table th, .cleaning-table td { padding: 12px; text-align: center; border-bottom: 1px solid #e0e0e0; }
+    .cleaning-table th { background: #2c7da0; color: #fff; }
+    .cleaning-table td { background: #f9f9f9; }
+    .tenant-name-box { width: 100px; height: 24px; border: 1px solid #999; border-radius: 4px; background: #f0f0f0; margin: auto; }
+    #taskHistory, #garbageHistory { margin-top: 20px; background: #fff; padding: 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width:700px; }
+    #taskHistory div, #garbageHistory div { margin-bottom: 8px; }
+
+
+    
+    .event-item {
+      background:#fff;
+      padding:12px;
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom:12px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .event-item.completed { background:#e0ffe0; } /* zelená pro dokončené */
+    .event-item.upcoming { border-left:4px solid #2c7da0; } /* modrá pro nadcházející */
+    .event-item.past { opacity:0.7; } /* šedá pro minulost */
+    .event-item button { align-self:flex-end; padding:4px 8px; font-size:0.9rem; border:none; border-radius:6px; cursor:pointer; background:#2c7da0; color:#fff; }
+    .event-item button:hover { background:#1b5e77; }
+
+    
+#eventForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  max-width: 500px;
+  margin-bottom: 24px;
+}
+
+#eventForm label {
+  font-weight: 600;
+  color: #2c7da0;
+}
+
+#eventForm input,
+#eventForm textarea {
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+#eventForm textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+#eventForm button {
+  align-self: flex-start;
+  padding: 10px 18px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: none;
+  background: #2c7da0;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#eventForm button:hover {
+  background: #1b5e77;
+  transform: translateY(-1px);
+}
+
+
+.groceries-form {
+  background:#fff;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.1);
+  max-width:600px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-bottom:30px;
+}
+
+.product-row {
+  display:flex;
+  gap:10px;
+}
+
+.product-row input {
+  flex:1;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+.groceries-form button {
+  align-self:flex-start;
+  padding:10px 16px;
+  border:none;
+  border-radius:10px;
+  background:#2c7da0;
+  color:#fff;
+  cursor:pointer;
+}
+
+.groceries-form button:hover {
+  background:#1b5e77;
+}
+
+.proposal-card {
+  background:#fff;
+  padding:16px;
+  border-radius:14px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom:16px;
+}
+
+.proposal-item {
+  border-top:1px solid #e0e0e0;
+  padding-top:10px;
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.proposal-actions {
+  display:flex;
+  gap:10px;
+}
+
+.proposal-actions button {
+  padding:6px 12px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  font-size:0.9rem;
+}
+
+.approve { background:#2c7da0; color:#fff; }
+.reject { background:#ccc; }
+.bought-row {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.bought-row input[type="number"] {
+  width:80px;
+  padding:6px;
+}
+
+
+
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-menu">
+    <div class="sidebar-item active" data-section="home"> <span class="material-icons-outlined">home</span> Homepage </div>
+    <div class="sidebar-item" data-section="reports"> <span class="material-icons-outlined">description</span> Reports </div>
+    <div class="sidebar-item" data-section="documents"> <span class="material-icons-outlined">folder</span> Documents </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-item" data-section="settings"> <span class="material-icons-outlined">settings</span> Settings </div>
+  </div>
+  <div class="sidebar-footer"> <img src="logo-transparent.png" alt="BV Student Housing"> </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="homeSection">
+  <img src="metropolis.jpg" alt="City">
+  <div class="top-bar">
+    <div class="icon" id="menuToggle">☰</div>
+    <div style="display:flex; gap:16px; align-items:center;">
+      <div class="notif"><span class="material-icons-outlined">notifications</span></div>
+      <div class="avatar"></div>
+    </div>
+  </div>
+  <h1>Welcome to Tenants Portal</h1>
+</section>
+
+<!-- MENU -->
+<section class="menu" id="menuSection">
+  <div class="menu-item" id="cleaningCard">
+    <div class="pill"><div class="circle"><span class="material-icons-outlined">cleaning_services</span></div></div>
+    <span>Cleaning schedule</span>
+  </div>
+  <div class="menu-item" id="garbageCard">
+    <div class="pill"><div class="circle"><span class="material-icons-outlined">recycling</span></div></div>
+    <span>Garbage disposal</span>
+  </div>
+  <div class="menu-item" id="eventsCard"><div class="pill"><div class="circle"><span class="material-icons-outlined">event</span></div></div><span>Events</span></div>
+
+  <div class="menu-item" id="groceriesCard">
+  <div class="pill"><div class="circle"><span class="material-icons-outlined">shopping_basket</span></div></div>
+  <span>Groceries</span>
+  </div>
+
+  
+  <div class="menu-item"><div class="pill"><div class="circle"><span class="material-icons-outlined">sensors</span></div></div><span>Sensor</span></div>
+</section>
+
+<!-- REPORTS -->
+<section id="reportsSection">
+  <button class="backToMenu">← Back to Homepage</button>
+  <form id="reportsForm">
+    <label for="issueType">Issue Type</label>
+    <select id="issueType" required>
+      <option value="">-- Select issue --</option>
+      <option value="Plumbing">Plumbing</option>
+      <option value="Electrical">Electrical</option>
+      <option value="Heating">Heating</option>
+      <option value="Internet">Internet</option>
+      <option value="Other">Other</option>
+    </select>
+    <label for="issueDescription">Description</label>
+    <textarea id="issueDescription" placeholder="Describe your issue" required></textarea>
+    <label for="issuePhotos">Upload photos (optional)</label>
+    <input type="file" id="issuePhotos" accept="image/*" multiple />
+    <button type="submit">Submit Report</button>
+  </form>
+  <div class="report-list">
+    <h3>Pending Reports</h3>
+    <div id="pendingReports"></div>
+    <h3>Solved Reports</h3>
+    <div id="solvedReports"></div>
+  </div>
+</section>
+
+<!-- DOCUMENTS -->
+<section id="documentsSection">
+  <button class="backToMenu">← Back to Homepage</button>
+  <h2>Documents</h2>
+  <div id="documentsList">
+    <div class="document-item"><span>Rental Agreement</span><span>Contract</span></div>
+    <div class="document-item"><span>January Rent</span><span>Invoice</span></div>
+    <div class="document-item"><span>February Rent</span><span>Invoice</span></div>
+    <div class="document-item"><span>Damage Deposit Payment</span><span>Receipt</span></div>
+    <div class="document-item"><span>Maintenance Report</span><span>Report</span></div>
+  </div>
+</section>
+
+<!-- CLEANING SCHEDULE -->
+<section id="cleaningSection">
+  <button class="backToMenu">← Back to Homepage</button>
+  <h2>Weekly Cleaning Schedule</h2>
+  <table class="cleaning-table">
+    <thead>
+      <tr>
+        <th>Day</th>
+        <th>Tenant</th>
+        <th>Kitchen</th>
+        <th>Bathroom</th>
+        <th>Living Room</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Monday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Tuesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Wednesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Thursday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Friday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Saturday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Sunday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Task History</h3>
+  <div id="taskHistory">
+    <div><strong>Done Tasks:</strong> <span id="doneTasks">Monday: Kitchen, Wednesday: Bathroom, Friday: Living Room</span></div>
+    <div><strong>Missed Tasks:</strong> <span id="missedTasks">Tuesday: Bathroom, Thursday: Kitchen</span></div>
+  </div>
+</section>
+
+<!-- GARBAGE DISPOSAL -->
+<section id="garbageSection">
+  <button class="backToMenu">← Back to Homepage</button>
+  <h2>Weekly Garbage Disposal</h2>
+  <table class="cleaning-table">
+    <thead>
+      <tr>
+        <th>Day</th>
+        <th>Tenant</th>
+        <th>Paper</th>
+        <th>Plastic</th>
+        <th>Glass</th>
+        <th>Bio</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Monday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Tuesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Wednesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Thursday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Friday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Saturday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Sunday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Garbage History</h3>
+  <div id="garbageHistory">
+    <div><strong>Done Tasks:</strong> <span>Monday: Paper, Wednesday: Glass, Friday: Bio</span></div>
+    <div><strong>Missed Tasks:</strong> <span>Tuesday: Plastic, Thursday: Paper</span></div>
+  </div>
+</section>
+
+<!-- GROCERIES -->
+<section id="groceriesSection" style="display:none; padding:40px 20px;">
+  <button class="backToMenu">← Back to Homepage</button>
+  <h2>Groceries Proposals</h2>
+
+  <!-- FORM -->
+  <form id="groceriesForm" class="groceries-form">
+    <h3>New Grocery Proposal</h3>
+
+    <div id="productsContainer">
+      <div class="product-row">
+        <input type="text" placeholder="Product name (e.g. Milk)">
+        <input type="text" placeholder="Reason (e.g. Ran out)">
+      </div>
+    </div>
+
+    <button type="button" id="addProductBtn">+ Add another product</button>
+    <button type="submit">Create Proposal</button>
+  </form>
+
+  <!-- PROPOSALS -->
+  <div id="groceriesProposals"></div>
+</section>
+
+
+
+<!-- EVENTS -->
+<section id="eventsSection">
+  <button class="backToMenu">← Back to Homepage</button>
+  <h2>Upcoming Events</h2>
+
+  <form id="eventForm">
+    <label for="eventName">Event Name</label>
+    <input type="text" id="eventName" placeholder="Event title" required>
+    
+    <label for="eventDate">Date</label>
+    <input type="date" id="eventDate" required>
+    
+    <label for="eventDescription">Description</label>
+    <textarea id="eventDescription" placeholder="Describe the event" required></textarea>
+    
+    <button type="submit">Add Event</button>
+  </form>
+
+  <div id="eventsList"></div>
+
+
+
+
+
+
+
+<div class="chat">💬</div>
+
+<script>
+  // Sidebar toggle
+  const sidebar = document.getElementById("sidebar");
+  const menuToggle = document.getElementById("menuToggle");
+  menuToggle.addEventListener("click", () => sidebar.classList.toggle("open"));
+
+  
+  const homeSection = document.getElementById("homeSection");
+  const menuSection = document.getElementById("menuSection");
+  const cleaningSection = document.getElementById("cleaningSection");
+  const garbageSection = document.getElementById("garbageSection");
+  const reportsSection = document.getElementById("reportsSection");
+  const documentsSection = document.getElementById("documentsSection");
+  const eventsSection = document.getElementById("eventsSection");
+
+  
+  const backButtons = document.querySelectorAll(".backToMenu");
+  backButtons.forEach(btn => btn.addEventListener("click", () => {
+    homeSection.style.display = "block";
+    menuSection.style.display = "flex";
+    cleaningSection.style.display = "none";
+    garbageSection.style.display = "none";
+    reportsSection.style.display = "none";
+    documentsSection.style.display = "none";
+    eventsSection.style.display = "none";
+  }));
+
+  
+  document.getElementById("cleaningCard").addEventListener("click", () => {
+    homeSection.style.display = "none"; menuSection.style.display = "none";
+    cleaningSection.style.display = "block";
+  });
+  document.getElementById("garbageCard").addEventListener("click", () => {
+    homeSection.style.display = "none"; menuSection.style.display = "none";
+    garbageSection.style.display = "block";
+  });
+  document.getElementById("eventsCard").addEventListener("click", () => {
+    homeSection.style.display = "none"; menuSection.style.display = "none";
+    groceriesSection.style.display = "none";
+
+    eventsSection.style.display = "block";
+  });
+
+  
+  const sidebarItems = document.querySelectorAll(".sidebar-item");
+  sidebarItems.forEach(item => {
+    const section = item.dataset.section;
+    item.addEventListener("click", () => {
+    
+      homeSection.style.display = "none";
+      menuSection.style.display = "none";
+      cleaningSection.style.display = "none";
+      garbageSection.style.display = "none";
+      reportsSection.style.display = "none";
+      documentsSection.style.display = "none";
+      eventsSection.style.display = "none";
+
+      if (section === "home") {
+        homeSection.style.display = "block";
+        menuSection.style.display = "flex";
+      } else if (section === "reports") {
+        reportsSection.style.display = "block";
+      } else if (section === "documents") {
+        documentsSection.style.display = "block";
+      } else if (section === "settings") {
+        // later settings
+      }
+
+      
+      sidebar.classList.remove("open");
+    });
+  });
+
+  
+  document.addEventListener("click", (e) => {
+    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+      sidebar.classList.remove("open");
+    }
+  });
+
+  
+  const eventForm = document.getElementById("eventForm");
+  const eventsList = document.getElementById("eventsList");
+  let events = [];
+
+  function getEventStatus(dateStr) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const eventDate = new Date(dateStr + "T00:00");
+    if (eventDate < today) return "past";
+    return "upcoming";
+  }
+
+  function renderEvents() {
+    eventsList.innerHTML = "";
+    events.sort((a,b) => new Date(a.date) - new Date(b.date));
+    events.forEach((ev, idx) => {
+      const eventDiv = document.createElement("div");
+      const statusClass = ev.completed ? "completed" : getEventStatus(ev.date);
+      eventDiv.className = `event-item ${statusClass}`;
+      eventDiv.innerHTML = `<strong>${ev.name}</strong> <em>(${ev.date})</em><p>${ev.description}</p><button>${ev.completed ? "Completed" : "Mark as Completed"}</button>`;
+      const btn = eventDiv.querySelector("button");
+      if(ev.completed) btn.disabled = true;
+      btn.addEventListener("click", () => {
+        events[idx].completed = true;
+        renderEvents();
+      });
+      eventsList.appendChild(eventDiv);
+    });
+  }
+
+  eventForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("eventName").value;
+    const date = document.getElementById("eventDate").value;
+    const description = document.getElementById("eventDescription").value;
+    events.push({name, date, description, completed:false});
+    eventForm.reset();
+    renderEvents();
+  });
+
+  const groceriesSection = document.getElementById("groceriesSection");
+
+document.getElementById("groceriesCard").addEventListener("click", () => {
+  homeSection.style.display = "none";
+  menuSection.style.display = "none";
+  cleaningSection.style.display = "none";
+  garbageSection.style.display = "none";
+  reportsSection.style.display = "none";
+  documentsSection.style.display = "none";
+  eventsSection.style.display = "none";
+
+  groceriesSection.style.display = "block";
+});
+
+
+const groceriesForm = document.getElementById("groceriesForm");
+const productsContainer = document.getElementById("productsContainer");
+const groceriesProposals = document.getElementById("groceriesProposals");
+const addProductBtn = document.getElementById("addProductBtn");
+
+addProductBtn.addEventListener("click", () => {
+  const row = document.createElement("div");
+  row.className = "product-row";
+  row.innerHTML = `
+    <input type="text" placeholder="Product name">
+    <input type="text" placeholder="Reason">
+  `;
+  productsContainer.appendChild(row);
+});
+
+groceriesForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const rows = productsContainer.querySelectorAll(".product-row");
+  let itemsHTML = "";
+
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll("input");
+    itemsHTML += `
+      <div class="proposal-item">
+        <strong>${inputs[0].value}</strong>
+        <em>${inputs[1].value}</em>
+
+        <div class="proposal-actions">
+          <button class="approve">Approve</button>
+          <button class="reject">Reject</button>
+        </div>
+
+        <div class="bought-row">
+          <label><input type="checkbox"> Bought</label>
+          <input type="number" placeholder="€">
+        </div>
+      </div>
+    `;
+  });
+
+  const proposal = document.createElement("div");
+  proposal.className = "proposal-card";
+  proposal.innerHTML = `<h4>Grocery Proposal</h4>${itemsHTML}`;
+
+  groceriesProposals.prepend(proposal);
+
+  groceriesForm.reset();
+  productsContainer.innerHTML = `
+    <div class="product-row">
+      <input type="text" placeholder="Product name">
+      <input type="text" placeholder="Reason">
+    </div>
+  `;
+});
+
+
+  
+</script>
+
+
+
+</body>
+</html>
