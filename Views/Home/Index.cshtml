@@ -1,8 +1,239 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Housing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #e8ebf2;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            margin: 0;
+            background: #e8ebf2;
+            margin-top: -35px;
+            margin-bottom: -60px;
+            
+            
+        }
+        .logo img {
+            height: 200px;
+            margin-top: -20px;
+            display: block;
+            margin-left: -25px;
+        }
+        nav {
+            background: #3BA9D4 ;
+            display: flex;
+            justify-content: space-evenly;
+            padding: 5px 0;
+            font-size: 20px;
+            color: white;
+            margin-top: -20px;
+        }
+        nav a {
+            text-decoration: none;
+            color: white;
+            font-weight: 400;
+        }
+        .bar {
+            height: 8px;
+            background: #39b5ac;
+        }
+        .top-icons {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .top-icons img {
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-top: -20px;
+        }
+        .notif {
+            font-size: 28px;
+            margin-top: -20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px; 
+            width: 40px; 
+            border: 2px solid #5a5a5a; 
+            border-radius: 50%;
+            transition: background 0.3s;
+
+            }
+
+        .notif:hover {
+             background: #4FB8A5; 
+             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            }
+
+            
+        
+        .center-text {
+            text-align: center;
+            margin: 20px 0 20px 0;
+            font-size: 28px;
+            font-weight: 400;
+            color: #111;
+        }
+        .center-text p:nth-child(2) {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+
+        
+        .gallery-wrapper {
+            overflow: hidden;
+            padding: 20px 40px;
+            background: #1E3A5F ;
+            position: relative;
+            margin-top: 60px;
+        }
+
+        .gallery {
+            display: flex;
+            gap: 30px;
+        }
+
+        .gallery img {
+            width: 350px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+
+        }
+
+        .auth-buttons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-top: -10px; 
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+.auth-buttons .btn {
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background-color: #3BA9D4;
+    color: white;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.auth-buttons .btn:hover {
+    background-color: #39b5ac;
+}
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="logo-transparent.png" alt="logo">
+    </div>
+
+  <div class="top-icons">
+    <div style="position: relative;">
+        <div id="notificationsComponent"></div>
+    </div>
+    <div class="auth-buttons">
+        <a href="register.html" class="btn">Sign Up</a>
+        <a href="login.html" class="btn">Log In</a>
+    </div>
 </div>
+
+
+</header>
+
+<nav>
+    <a href="#">Home</a>
+    <a href="apply.html">Apply</a>
+    <a href="#">Services</a>
+    <a href="#">FAQ</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+</nav>
+<div class="bar"></div>
+
+<div class="center-text">
+    <p>Your application is now pending landlord approval.</p>
+    <p>If you have any questions, feel free to contact us</p>
+</div>
+
+<div class="gallery-wrapper">
+    <div class="gallery" id="gallery">
+        
+    </div>
+</div>
+
+<script>
+const gallery = document.getElementById('gallery');
+
+
+const images = [
+    'image.png',
+    'image1.png',
+    'image3.jpg',
+    'image4.jpg',
+    'image9.jpg',
+    'image6.jpg',
+    'image7.jpg',
+    'image8.jpg'
+];
+
+
+for (let i = 0; i < 6; i++) {
+    const img = document.createElement('img');
+    img.src = images[i % images.length];
+    gallery.appendChild(img);
+}
+
+let scrollAmount = 0;
+const scrollSpeed = 1; 
+
+function scrollGallery() {
+    scrollAmount += scrollSpeed;
+    gallery.style.transform = `translateX(-${scrollAmount}px)`;
+
+    
+    const firstImg = gallery.children[0];
+    if (scrollAmount >= firstImg.offsetWidth + 30) { 
+        scrollAmount -= firstImg.offsetWidth + 30;
+
+        
+        gallery.appendChild(firstImg);
+
+        
+        const nextImage = images[Math.floor(Math.random() * images.length)];
+        firstImg.src = nextImage;
+    }
+
+    requestAnimationFrame(scrollGallery);
+}
+
+scrollGallery();
+
+</script>
+ <script src="notifications.js"></script>
+
+
+</body>
+</html>
+
+
+
