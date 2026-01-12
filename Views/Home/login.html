@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="site.css">
 </head>
 <body>
     <h1 class="page-title">Welcome back!</h1>
     <div class="auth-card">
-        <form method="post" class="auth-form">
+        <form method="post" class="auth-form" id="loginForm">
             <div class="auth-field">
                 <label class="auth-label">Username</label>
-                <input type="text" class="auth-input" placeholder="Enter username" />
+                <input type="text" name="username" class="auth-input" placeholder="Enter username" required />
             </div>
 
             <div class="auth-field">
                 <label class="auth-label">Password</label>
-                <input type="password" class="auth-input" placeholder="Enter password" />
+                <input type="password" name="password" class="auth-input" placeholder="Enter password" required />
             </div>
 
             <button type="submit" class="auth-btn">Log in</button>
@@ -27,7 +27,45 @@
                 Don’t have an account? 
                 <a href="register.html" class="auth-link">Register</a>
             </p>
-        </form>
-    </div>
+        </form> </div>
+
+        <script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault(); // obnovení
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+        // fetch point
+        const response = await fetch('/api/login', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            
+            // ukládání dat pro profil po přihlášení
+            localStorage.setItem('userData', JSON.stringify({
+                firstName: result.firstName,
+                lastName: result.lastName,
+                email: result.email,
+                isLoggedIn: true
+            }));
+
+            // přesměrování na hlavní stránku
+            window.location.href = 'index.html';
+        } else {
+            alert("Login failed. Please check your credentials.");
+        }
+    } catch (error) {
+        console.error("Backend connection error:", error);
+    
+        alert("Running in frontend-only mode. Backend not found (Error 404/405).");
+    }
+});
+</script>
 </body>
 </html>
