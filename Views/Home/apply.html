@@ -6,16 +6,14 @@
     <title>Apply - Verification</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        
         * { margin:0; padding:0; box-sizing:border-box; }
         html, body {
             height: 100%;
-            overflow: hidden; 
+            overflow-y: auto;
             font-family: 'Poppins', sans-serif;
             background: #e8ebf2;
         }
 
-        
         nav {
             background: #3BA9D4;
             display: flex;
@@ -30,19 +28,16 @@
             font-weight: 400;
         }
 
-        
         .sub-nav {
             background: #39b5ac;
             height: 8px;
         }
 
-        
         .main-content {
             display: flex;
             height: calc(100% - 68px); 
         }
 
-        
         .text-column {
             flex: 1;
             padding: 40px;
@@ -66,8 +61,6 @@
            color: #1E3A5F;
         }
 
-
-        
         .form-column {
             flex: 1;
             display: flex;
@@ -100,7 +93,6 @@
             margin-top: 10px;
         }
 
-        
         .logo-fixed {
             position: fixed;
             bottom: 10px;
@@ -111,7 +103,6 @@
 </head>
 <body>
 
-
 <nav>
     <a href="premainpage.html">Home</a>
     <a href="apply.html">Apply</a>
@@ -121,12 +112,9 @@
     <a href="#">Contact</a>
 </nav>
 
-
 <div class="sub-nav"></div>
 
-
 <div class="main-content">
-    
     <div class="text-column">
         <h1>Welcome to the BV Housing Portal</h1>
         <p>This form allows you to verify your identity and connect to your <strong>BV Housing Portal</strong> account. Once approved by your landlord, you will gain access to a secure platform where you can:</p>
@@ -136,34 +124,84 @@
         <p>- <strong>Report maintenance issues</strong> or other problems to your landlord.</p>
         <p>- Receive <strong>notifications</strong> for important updates.</p>
         <p>- Access an <strong>overview of all your documents</strong>, including invoices, contracts, and pending payments.</p>
-        <p>By completing this form, you ensure that your account is correctly linked to your rental agreement and that you can fully enjoy all portal features.</p>
+        <p><strong>The verification code can be found on the contract.</strong> By completing this form, you ensure that your account is correctly linked to your rental agreement.</p>
     </div>
 
-
     <div class="form-column">
-        <form action="#" method="post" class="verification-form">
+        <form action="#" method="post" class="verification-form" id="applyForm">
             <label for="dob">Date of Birth</label>
             <input type="date" id="dob" name="dob" required>
 
             <label for="first-name">First Name</label>
             <input type="text" id="first-name" name="first-name" required>
 
-            <label for="middle-name">Middle Name</label>
-            <input type="text" id="middle-name" name="middle-name">
-
             <label for="last-name">Last Name</label>
             <input type="text" id="last-name" name="last-name" required>
+
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required placeholder="Enter your email">
 
             <label for="code">Verification Code</label>
             <input type="text" id="code" name="code" required placeholder="Enter your code">
 
-            <button type="submit">Verify</button>
+            <button type="submit" id="submitBtn">Verify</button>
+            <div id="formStatus" style="display:none; font-size: 14px; text-align: center; margin-top: 5px;"></div>
         </form>
     </div>
 </div>
 
+<script>
+document.getElementById('applyForm').addEventListener('submit', async (e) => {
+    e.preventDefault(); 
 
+    const statusMsg = document.getElementById('formStatus');
+    const btn = document.getElementById('submitBtn');
 
+    // Kontrola přihlášení
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const isLoggedIn = localStorage.getItem('userToken') || userData?.isLoggedIn;
+
+    if (!isLoggedIn) {
+        statusMsg.style.display = 'block';
+        statusMsg.style.color = 'red';
+        statusMsg.textContent = "You must be logged in to submit this form!";
+        return;
+    }
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+
+    try {
+        const response = await fetch('/api/apply-verification', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('userToken') || ''}` 
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            statusMsg.style.display = 'block';
+            statusMsg.style.color = '#39b5ac';
+            statusMsg.textContent = "Success! Your application was sent to the landlord.";
+            e.target.reset(); 
+        } else {
+            throw new Error("Submission failed");
+        }
+    } catch (err) {
+        statusMsg.style.display = 'block';
+        statusMsg.style.color = 'red';
+        statusMsg.textContent = "Error: Could not send application. Please try again.";
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Verify";
+    }
+});
+</script>
 
 </body>
 </html>
