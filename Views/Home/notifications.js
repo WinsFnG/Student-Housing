@@ -1,6 +1,6 @@
 const target = document.getElementById('notificationsComponent');
 
-// Pojistka: Skript se spustí jen pokud na stránce existuje cíl
+// skript se spustí jen pokud na stránce existuje cíl
 if (target) {
     const notifContainer = document.createElement('div');
     notifContainer.classList.add('notif-container');
@@ -42,7 +42,7 @@ if (target) {
         e.stopPropagation();
     });
 
-    // --- LOGIKA PRO KOLEGU (BACKEND) ---
+    
     async function fetchNotifications() {
         const popupContent = document.querySelector('.popup-content');
         const statusLabel = document.querySelector('.popup-status');
@@ -73,11 +73,11 @@ if (target) {
         }
     }
 
-    // Načteme data hned po načtení stránky
+    // data hned po načtení
     fetchNotifications();
 }
 
-// STYLY (zůstávají stejné)
+
 const style = document.createElement('style');
 style.textContent = `
 .notif-container { position: relative; margin-top: -20px; }
