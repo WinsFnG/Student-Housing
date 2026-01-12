@@ -121,7 +121,7 @@
     display: flex;
     gap: 15px;
     align-items: center;
-    margin-top: -10px; 
+    margin-top: -10px; /* doladění vertikálně vedle zvonečku */
 }
 
 .auth-buttons .btn {
@@ -219,8 +219,7 @@ function scrollGallery() {
         gallery.appendChild(firstImg);
 
         
-        const nextImage = images[Math.floor(Math.random() * images.length)];
-        firstImg.src = nextImage;
+ 
     }
 
     requestAnimationFrame(scrollGallery);
@@ -230,7 +229,38 @@ scrollGallery();
 
 </script>
  <script src="notifications.js"></script>
+<script>
+function updateAuthUI() {
+    const authSection = document.getElementById('authSection');
+    // uložení dat local storage
+    const user = JSON.parse(localStorage.getItem('userData')); 
 
+    if (user && user.isLoggedIn) {
+        // Po přihlášení se vykreslí profil
+        authSection.innerHTML = `
+            <div class="user-profile" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <div style="text-align: right; line-height: 1.2;">
+                    <div style="font-weight: 600; color: #1E3A5F; font-size: 14px;">${user.firstName} ${user.lastName}</div>
+                    <div style="font-size: 11px; color: #777;">${user.email}</div>
+                </div>
+                <div style="width: 40px; height: 40px; background: #39b5ac; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white;">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <button onclick="logout()" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 12px; margin-left: 5px;">Logout</button>
+            </div>
+        `;
+    }
+}
+
+function logout() {
+    localStorage.removeItem('userData');
+    localStorage.removeItem('userToken');
+    window.location.reload(); // Obnoví stránku a vrátí tlačítka login/dign Up
+}
+
+
+updateAuthUI();
+</script>
 
 </body>
 </html>
