@@ -1,2 +1,761 @@
-﻿<h1>Landlord Applications</h1>
-<p>This is the landlord view, its not the best...for now</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Landlord Portal - Full Dashboard</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<script src="notificationss.js"></script>
+<style>
+/* vše */
+* { box-sizing:border-box; margin:0; padding:0; font-family:Arial,sans-serif; }
+body { background:#eef1f5; overflow-x:hidden; }
+
+/* SIDEBAR */
+.sidebar {
+  position:fixed; top:0; left:-260px; width:260px; height:100vh;
+  background:#f1f4f8; box-shadow:4px 0 20px rgba(0,0,0,.15);
+  transition:.3s; z-index:1500; display:flex; flex-direction:column; justify-content:space-between;
+}
+.sidebar.open { left:0; }
+.sidebar-menu { padding-top:80px; }
+.sidebar-item {
+  display:flex; align-items:center; gap:16px;
+  padding:16px 24px; cursor:pointer; color:#333;
+}
+.sidebar-item:hover,.sidebar-item.active { background:#e3e9f0; font-weight:600; }
+.sidebar-divider { height:1px; background:#cbd5e1; margin:12px 0; }
+
+/*ikonka*/
+#mainTopBar {
+  position:fixed; top:20px; left:20px; right:20px;
+  display:flex; justify-content:space-between; color:#fff; z-index:1100;
+  
+}
+.icon { font-size:1.6rem; cursor:pointer; }
+.avatar {
+  width:40px; height:40px; border-radius:50%;
+  background:url("https://i.pravatar.cc/100") center/cover;
+  border:2px solid #fff;
+}
+
+/* HERO */
+.hero { position:relative; height:55vh; overflow:hidden; }
+.hero img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
+.hero::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(0,120,130,.2), rgba(0,60,70,.7));
+}
+.hero h1 {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  color:#fff; font-size:2.5rem; font-weight:400;
+  z-index: 10;
+  text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+/* jednotlivé karty  */
+/* mezerky*/
+.menu-item span {
+  display: block;      
+  margin-top: 15px;    
+  font-weight: 500;   
+  color: black;
+}
+.menu {
+  margin-top: 40px;
+  padding: 40px 20px 80px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.menu-item { text-align:center; cursor:pointer; }
+.pill {
+  width:150px; height:90px; background:#fff;
+  border-radius:20px; display:flex;
+  align-items:center; justify-content:center;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+/* Šedý čtverec*/
+.circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f3f6f9;
+  
+  
+  display: flex;
+  align-items: center;      /* Svislé centrování */
+  justify-content: center;   /* Horizontální centrování */
+}
+
+
+.circle span { 
+  color: #2c7da0; 
+  font-size: 26px; 
+  
+  /* vynulování řádkování a okrajů */
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  display: block;
+}
+/*sekce*/
+section.page { display:none; padding:40px 20px; }
+.back {
+  margin-bottom:20px; padding:8px 12px;
+  border:1px solid #2c7da0; border-radius:8px;
+  background:#fff; color:#2c7da0; cursor:pointer;
+}
+.back:hover { background:#2c7da0; color:#fff; }
+
+.nav-btn {
+  padding: 8px 16px;
+  border: 1px solid #2c7da0;
+  border-radius: 8px;
+  background: #fff;
+  color: #2c7da0;
+  cursor: pointer;
+  font-weight: 600;
+}
+.nav-btn:hover { background:#2c7da0; color:#fff; }
+
+/* karty*/
+.cleaning-table { 
+  width: 100%; border-collapse: collapse; 
+  background: #fff; border-radius: 12px; overflow: hidden; 
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1); margin-bottom: 20px; 
+}
+.cleaning-table th, .cleaning-table td { padding: 12px; text-align: center; border-bottom: 1px solid #e0e0e0; }
+.cleaning-table th { background: #2c7da0; color: #fff; font-size: 0.9rem; }
+
+.cell-input {
+  width: 100%; padding: 8px; border: 1px solid #eee; border-radius: 4px; 
+  font-size: 0.85rem; text-align: center;
+}
+.cell-input:focus { border-color: #2c7da0; outline: none; background: #f9f9f9; }
+
+.card { background:#fff; padding:16px; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,.1); margin-bottom:16px; }
+.approve { background:#2c7da0; color:#fff; border:none; border-radius:8px; cursor:pointer; }
+.reject { background:#ccc; color:#333; border:none; border-radius:8px; cursor:pointer; }
+
+.chat { position:fixed; bottom:30px; right:30px; width:56px; height:56px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(0,0,0,.2); cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-menu">
+    <div class="sidebar-item active" data-go="home"><span class="material-icons-outlined">home</span> Homepage</div>
+    <div class="sidebar-item" data-go="reports"><span class="material-icons-outlined">description</span> Reports</div>
+    <div class="sidebar-item" data-go="documents"><span class="material-icons-outlined">folder</span> Documents</div>
+    <div class="sidebar-item" data-go="applications"><span class="material-icons-outlined">group</span> Tenant Applications</div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-item" data-go="settings"><span class="material-icons-outlined">settings</span> Settings</div>
+  </div>
+</div>
+
+
+<div class="top-bar" id="mainTopBar">
+  <div class="icon" id="menuToggle">☰</div>
+
+<div style="display: flex; align-items: center; gap: 15px; position: relative;">
+    <div id="notificationsComponent"></div>
+    
+    <div class="avatar" id="avatarBtn" style="cursor: pointer;"></div>
+
+    <input type="file" id="avatarInput" hidden accept="image/*">
+
+    <div id="profileDropdown" style="display: none; position: absolute; top: 55px; right: 0; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); z-index: 2000; width: 240px; color: #333; border: 1px solid #eee;">
+        <div style="text-align: center; margin-bottom: 15px;">
+            <p style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px;">Landlord Account</p>
+            <p id="landlordEmail" style="font-weight: bold; color: #1E3A5F; font-size: 14px; margin-top: 5px;">landlord@portal.com</p>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+            <p style="font-size: 11px; color: #888; margin-bottom: 4px;">Password:</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <code id="passwordField" style="font-family: monospace; color: #2c7da0;">••••••••</code>
+                <span id="showPassBtn" class="material-icons-outlined" style="font-size: 16px; color: #ccc; cursor: pointer;" title="Hold to show password">visibility</span>
+            </div>
+        </div>
+        
+        <button onclick="document.getElementById('avatarInput').click()" style="width: 100%; padding: 10px; background: #fff; color: #2c7da0; border: 1px solid #2c7da0; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; margin-bottom: 10px; transition: 0.2s;" onmouseover="this.style.background='#f0f7fa'" onmouseout="this.style.background='#fff'">
+            Change Photo
+        </button>
+
+        <button onclick="handleLogout()" style="width: 100%; padding: 10px; background: #c62828; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span class="material-icons-outlined" style="font-size: 18px;">logout</span> Logout
+        </button>
+    </div>
+</div>
+</div>
+
+<section class="hero" id="home">
+  <img src="metropolis.jpg">
+  <h1>Welcome to Landlord Portal</h1>
+</section>
+
+<section class="menu" id="menu">
+  <div class="menu-item" data-open="cleaning"><div class="pill"><div class="circle"><span class="material-icons-outlined">cleaning_services</span></div></div><span>Cleaning schedule</span></div>
+  <div class="menu-item" data-open="garbage"><div class="pill"><div class="circle"><span class="material-icons-outlined">recycling</span></div></div><span>Garbage disposal</span></div>
+  <div class="menu-item" data-open="events"><div class="pill"><div class="circle"><span class="material-icons-outlined">event</span></div></div><span>Events</span></div>
+  <div class="menu-item" data-open="sensors"><div class="pill"><div class="circle"><span class="material-icons-outlined">sensors</span></div></div><span>Sensor</span></div>
+</section>
+
+<section class="page" id="cleaning">
+  <button class="back">← Back to Menu</button>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div>
+      <h2 style="color:#1E3A5F;">Cleaning Management</h2>
+      <p id="currentWeekRange" style="color:#2c7da0; font-weight:600;"></p>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="nav-btn" onclick="changeWeek(-1)">« Previous Week</button>
+      <button class="nav-btn" onclick="changeWeek(1)">Next Week »</button>
+    </div>
+  </div>
+  <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
+    <div style="flex:2; min-width:600px;">
+      <div style="overflow-x:auto;">
+        <table class="cleaning-table">
+          <thead>
+            <tr><th style="width:120px;">Day & Date</th><th>Kitchen</th><th>Bathroom</th><th>Living room</th><th>Storage room</th><th style="width:80px;">Action</th></tr>
+          </thead>
+          <tbody id="cleaningBody"></tbody>
+        </table>
+      </div>
+      <button class="approve" onclick="saveCleaningChanges()" style="padding:12px 24px; font-weight:bold;">Save Changes</button>
+    </div>
+    <div style="flex:1; min-width:300px; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+      <h3 style="color:#1E3A5F; margin-bottom:15px;">Cleaning History</h3>
+      <table class="cleaning-table" style="box-shadow:none; border:1px solid #eee; font-size:0.85rem;">
+        <thead style="background:#546e7a;"><tr><th>Date</th><th>Area</th><th>Status</th></tr></thead>
+        <tbody id="cleaningHistoryBody">
+          <tr><td>12. Jan</td><td>Storage</td><td><span style="color:#2e7d32; font-weight:bold;">● DONE</span></td></tr>
+          <tr><td>11. Jan</td><td>Kitchen</td><td><span style="color:#c62828; font-weight:bold;">● MISSED</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="garbage">
+  <button class="back">← Back to Menu</button>
+  <div style="margin-bottom:20px;">
+    <h2 style="color:#1E3A5F;">Garbage Responsibility</h2>
+    <p style="color:#2c7da0; font-weight:600;">Weekly rotation for all waste types</p>
+  </div>
+  <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
+    <div style="flex:2; min-width:600px;">
+      <table class="cleaning-table">
+        <thead><tr><th>Week Period</th><th>Categories</th><th>Assigned Tenant</th><th style="width:80px;">Action</th></tr></thead>
+        <tbody id="garbageBody"></tbody>
+      </table>
+      <button class="approve" onclick="saveGarbageSchedule()" style="padding:12px 24px; font-weight:bold;">Save Schedule</button>
+    </div>
+    <div style="flex:1; min-width:300px; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+      <h3 style="color:#1E3A5F; margin-bottom:15px;">Garbage History</h3>
+      <table class="cleaning-table" style="box-shadow:none; border:1px solid #eee; font-size:0.85rem;">
+        <thead style="background:#546e7a;"><tr><th>Week</th><th>Tenant</th><th>Status</th></tr></thead>
+        <tbody id="garbageHistoryBody">
+          <tr><td>Week 01</td><td>Petr Novák</td><td><span style="color:#2e7d32; font-weight:bold;">● DONE</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="events">
+  <button class="back">← Back to Menu</button>
+  <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;">
+    <div style="flex: 2; min-width: 500px;">
+      <div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 25px;">
+        <h3 style="color: #1E3A5F; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+          <span class="material-icons-outlined">add_circle_outline</span> Create Landlord Event
+        </h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <input type="text" id="evName" class="cell-input" placeholder="Event Name (e.g. Gas Inspection)" style="text-align: left; padding: 12px;">
+          <input type="date" id="evDate" class="cell-input" style="text-align: left; padding: 12px;">
+        </div>
+        <textarea id="evDesc" class="cell-input" placeholder="Event details..." style="margin-top: 15px; text-align: left; height: 60px; padding: 12px;"></textarea>
+        <button class="approve" onclick="publishLandlordEvent()" style="margin-top: 15px; width: 100%; padding: 12px; font-weight: bold;">Publish Event</button>
+      </div>
+      <div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <h3 style="color: #1E3A5F; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+          <span class="material-icons-outlined">pending_actions</span> Tenant Event Proposals
+        </h3>
+        <table class="cleaning-table" style="box-shadow: none; border: 1px solid #eee;">
+          <thead style="background: #f1f4f8;"><tr><th>Tenant</th><th>Proposal</th><th>Date</th><th>Action</th></tr></thead>
+          <tbody id="eventProposalsBody">
+            </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
+      <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <h3 style="color: #2c7da0; margin-bottom: 15px;">Upcoming Events</h3>
+        <div id="upcomingEventsList">
+             </div>
+      </div>
+      <div style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); opacity: 0.7;">
+        <h3 style="color: #546e7a; margin-bottom: 15px;">Past Events</h3>
+        <div id="pastEventsList">
+            </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="reports">
+  <button class="back">← Back to Menu</button>
+  <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;">
+    <div style="flex: 2; min-width: 500px;">
+      <h3 style="color: #c62828; margin-bottom: 15px;">Active Issues</h3>
+      <div id="activeReportsContainer" style="max-height: 70vh; overflow-y: auto;">
+         </div>
+    </div>
+    <div style="flex: 1; min-width: 300px;"><h3 style="color: #546e7a; margin-bottom: 15px;">Resolved History</h3><div style="background:#fff; border-radius:12px; overflow:hidden;"><table class="cleaning-table" style="box-shadow:none; border:none; font-size:12px; margin:0;"><thead style="background:#eceff1;"><tr><th>Issue</th><th>Date</th><th>Status</th></tr></thead><tbody id="historyBody"></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="page" id="sensors"><button class="back">← Back to Menu</button></section>
+
+<section class="page" id="documents">
+  <button class="back">← Back to Menu</button>
+  
+  <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 300px;">
+      <div class="card" style="padding: 25px;">
+        <h3 style="color: #1E3A5F; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+          <span class="material-icons-outlined">upload_file</span> Upload PDF/Doc
+        </h3>
+        
+        <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.txt">
+        
+        <div onclick="document.getElementById('fileInput').click()" style="border: 2px dashed #cbd5e1; padding: 30px; border-radius: 12px; text-align: center; cursor: pointer; margin-bottom: 15px; transition: 0.3s;" onmouseover="this.style.borderColor='#2c7da0'" onmouseout="this.style.borderColor='#cbd5e1'">
+          <span class="material-icons-outlined" style="font-size: 40px; color: #64748b;">cloud_upload</span>
+          <p id="fileNameDisplay" style="color: #64748b; margin-top: 10px; font-size: 0.9rem;">Click to select file</p>
+        </div>
+
+        <input type="text" id="docCategory" class="cell-input" placeholder="Category (e.g. Invoices)" style="text-align: left; padding: 12px; margin-bottom: 15px;">
+        
+        <button class="approve" onclick="handleBackendUpload()" style="width: 100%; padding: 12px; font-weight: bold;">Add to List</button>
+      </div>
+    </div>
+
+    <div style="flex: 2; min-width: 500px;">
+      <div class="card" style="padding: 25px;">
+        <h3 style="color: #1E3A5F; margin-bottom: 15px;">Stored Documents</h3>
+        <table class="cleaning-table" style="box-shadow: none; border: 1px solid #eee;">
+          <thead style="background: #f1f4f8;">
+            <tr>
+              <th style="text-align: left;">File Name</th>
+              <th>Size</th>
+              <th>Category</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="docList">
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="applications">
+  <button class="back">← Back to Menu</button>
+  
+  <div style="margin-bottom: 25px;">
+    <h2 style="color: #1E3A5F;">Tenant Applications</h2>
+    <p style="color: #64748b;">Review applicants by their verification codes.</p>
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <table class="cleaning-table" style="margin-bottom: 0; box-shadow: none;">
+      <thead>
+        <tr>
+          <th style="text-align: left; padding-left: 20px;">Full Name</th>
+          <th>Email Address</th>
+          <th>Verification Code</th>
+          <th>Status</th>
+          <th style="width: 200px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="applicationsBody">
+        </tbody>
+    </table>
+  </div>
+</section>
+<section class="page" id="settings"><button class="back">← Back to Menu</button><div class="card">Settings Content</div></section>
+
+<div class="chat">💬</div>
+
+<script defer>
+
+const API = {
+  saveCleaningWeek: async (payload) => {
+    console.log("API.saveCleaningWeek", payload);
+    return { success: true };
+  },
+  saveGarbageWeek: async (payload) => {
+    console.log("API.saveGarbageWeek", payload);
+    return { success: true };
+  },
+  publishEvent: async (payload) => {
+    console.log("API.publishEvent", payload);
+    return { success: true };
+  },
+  uploadDocument: async (payload) => {
+    console.log("API.uploadDocument", payload);
+    return { success: true };
+  },
+  logout: async () => {
+    console.log("API.logout");
+  }
+};
+
+
+const sidebar = document.getElementById("sidebar");
+const menuToggle = document.getElementById("menuToggle");
+const pages = document.querySelectorAll(".page");
+
+menuToggle.addEventListener("click", e => {
+  e.stopPropagation();
+  sidebar.classList.toggle("open");
+});
+
+document.addEventListener("click", e => {
+  if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+    sidebar.classList.remove("open");
+  }
+});
+
+function showHome() {
+  pages.forEach(p => p.style.display = "none");
+  document.getElementById("home").style.display = "block";
+  document.getElementById("menu").style.display = "flex";
+  document.getElementById("mainTopBar").style.display = "flex";
+}
+
+function openPage(id) {
+  pages.forEach(p => p.style.display = "none");
+  document.getElementById("home").style.display = "none";
+  document.getElementById("menu").style.display = "none";
+  document.getElementById(id).style.display = "block";
+  document.getElementById("mainTopBar").style.display = "none";
+}
+
+document.querySelectorAll("[data-open]").forEach(el =>
+  el.addEventListener("click", () => openPage(el.dataset.open))
+);
+
+document.querySelectorAll(".sidebar-item[data-go]").forEach(el =>
+  el.addEventListener("click", () => {
+    openPage(el.dataset.go);
+    sidebar.classList.remove("open");
+  })
+);
+
+document.querySelectorAll(".back").forEach(btn =>
+  btn.addEventListener("click", showHome)
+);
+
+/* cleaning*/
+let currentMonday = new Date();
+currentMonday.setDate(currentMonday.getDate() - (currentMonday.getDay() || 7) + 1);
+
+function updateCleaningTable() {
+  const body = document.getElementById("cleaningBody");
+  const range = document.getElementById("currentWeekRange");
+  body.innerHTML = "";
+
+  const sunday = new Date(currentMonday);
+  sunday.setDate(sunday.getDate() + 6);
+
+  range.innerText =
+    currentMonday.toLocaleDateString("en-GB") +
+    " - " +
+    sunday.toLocaleDateString("en-GB");
+
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(currentMonday);
+    date.setDate(date.getDate() + i);
+    const iso = date.toISOString().split("T")[0];
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${date.toLocaleDateString("en-GB", { weekday: "long" })}</strong><br><small>${iso}</small></td>
+      ${["kitchen","bathroom","livingroom","storageroom"].map(r =>
+        `<td><input class="cell-input" data-date="${iso}" data-room="${r}"></td>`
+      ).join("")}
+      <td><button class="nav-btn save-row">Save</button></td>
+    `;
+    body.appendChild(tr);
+  }
+}
+
+document.addEventListener("click", async e => {
+  if (e.target.classList.contains("save-row")) {
+    const row = e.target.closest("tr");
+    const inputs = row.querySelectorAll("input");
+    const payload = {};
+
+    inputs.forEach(i => {
+      payload[i.dataset.room] = i.value;
+    });
+
+    await API.saveCleaningWeek({
+      date: inputs[0].dataset.date,
+      assignments: payload
+    });
+
+    alert("Row saved (demo)");
+  }
+});
+
+document.querySelector(".approve").addEventListener("click", async () => {
+  const inputs = document.querySelectorAll("#cleaningBody input");
+  const data = {};
+
+  inputs.forEach(i => {
+    const d = i.dataset.date;
+    if (!data[d]) data[d] = {};
+    data[d][i.dataset.room] = i.value;
+  });
+
+  await API.saveCleaningWeek(data);
+  alert("Week saved (demo)");
+});
+
+/* events*/
+document.querySelector("#events .approve").addEventListener("click", async () => {
+  const name = evName.value;
+  const date = evDate.value;
+  const desc = evDesc.value;
+
+  if (!name || !date) return alert("Missing data");
+
+  await API.publishEvent({ name, date, desc });
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `<strong>${name}</strong><br><small>${date}</small><p>${desc}</p>`;
+  upcomingEventsList.prepend(card);
+
+  evName.value = evDate.value = evDesc.value = "";
+});
+
+/* documentation*/
+fileInput.addEventListener("change", () => {
+  fileNameDisplay.innerText = fileInput.files[0]?.name || "Select file";
+});
+
+async function handleBackendUpload() {
+  if (!fileInput.files[0]) return alert("No file");
+
+  await API.uploadDocument({
+    file: fileInput.files[0],
+    category: docCategory.value
+  });
+
+  alert("Uploaded (demo)");
+}
+
+/* profile*/
+avatarBtn.addEventListener("click", e => {
+  e.stopPropagation();
+  profileDropdown.style.display =
+    profileDropdown.style.display === "block" ? "none" : "block";
+});
+
+document.addEventListener("click", () => {
+  profileDropdown.style.display = "none";
+});
+
+async function handleLogout() {
+  await API.logout();
+  location.href = "login.html";
+}
+
+showHome();
+updateCleaningTable();
+
+function updateGarbageTable() {
+    const body = document.getElementById('garbageBody');
+    if(!body) return;
+    body.innerHTML = '';
+
+    // po týdne aktual
+    let startMon = new Date(); 
+    startMon.setDate(startMon.getDate() - (startMon.getDay() === 0 ? 6 : startMon.getDay() - 1));
+
+    for (let i = 0; i < 5; i++) {
+        let m = new Date(startMon); 
+        m.setDate(m.getDate() + (i * 7));
+        let s = new Date(m); 
+        s.setDate(s.getDate() + 6);
+
+        const tr = document.createElement('tr');
+        
+        // pozadi tydne
+        if (i === 0) tr.style.background = "#f0f9ff";
+
+        tr.innerHTML = `
+            <td>
+                <strong>${i === 0 ? 'CURRENT WEEK' : 'Week +' + i}</strong><br>
+                <small>${m.toLocaleDateString('en-GB', {day:'2-digit', month:'short'})} - ${s.toLocaleDateString('en-GB', {day:'2-digit', month:'short'})}</small>
+            </td>
+            <td>
+                <div style="display:flex; justify-content:center; gap:8px;">
+                    <span class="material-icons-outlined" title="Paper" style="color:#2196F3; font-size:20px;">description</span>
+                    <span class="material-icons-outlined" title="Plastic" style="color:#FBC02D; font-size:20px;">liquor</span>
+                    <span class="material-icons-outlined" title="Glass" style="color:#4CAF50; font-size:20px;">wine_bar</span>
+                    <span class="material-icons-outlined" title="General Waste" style="color:#9E9E9E; font-size:20px;">delete</span>
+                </div>
+            </td>
+            <td>
+                <input type="text" class="cell-input" placeholder="Assign tenant..." style="width: 160px;">
+            </td>
+            <td>
+                <button class="nav-btn" style="font-size:10px; padding:4px 12px;" onclick="alert('Schedule saved!')">Save</button>
+            </td>
+        `;
+        body.appendChild(tr);
+    }
+}
+
+/* chat */
+
+// test
+function createTestReport() {
+    const container = document.getElementById('activeReportsContainer');
+    if(!container) return;
+
+    const id = "rep_test_123";
+    const card = document.createElement('div');
+    card.id = id;
+    card.className = 'card';
+    card.style.borderLeft = "5px solid #c62828"; 
+    card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <span class="badge" style="font-size:10px; font-weight:bold; background:#ffebee; color:#c62828; padding:3px 8px; border-radius:10px;">NEW ISSUE</span>
+            <small style="color:#999;">Today, 10:15</small>
+        </div>
+        <strong style="color:#1E3A5F;">Broken Shower</strong>
+        <p style="font-size:0.9rem; color:#444; margin:5px 0 15px 0;">The water is not heating up since this morning.</p>
+        
+        <div id="chat-history-${id}" style="background:#f8f9fa; border-radius:8px; padding:10px; max-height:150px; overflow-y:auto; margin-bottom:10px; display:flex; flex-direction:column; gap:5px; border:1px solid #eee;">
+            <div style="background:#fff; padding:8px 12px; border-radius:10px; align-self:flex-start; font-size:0.85rem; border:1px solid #ddd;">
+                <strong>Tenant:</strong> Please check it as soon as possible.
+            </div>
+        </div>
+
+        <div style="display:flex; gap:5px; margin-bottom:15px;">
+            <input type="text" id="input-${id}" class="cell-input" placeholder="Type your reply..." style="text-align:left;">
+            <button class="approve" style="padding:5px 15px;" onclick="sendReply('${id}')">Send</button>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="nav-btn" style="flex:1; font-size:12px; border-color:#ff9800; color:#ff9800;" onclick="setStatusInProgress('${id}')">In Progress</button>
+            <button class="approve" style="flex:1; font-size:12px; background:#2e7d32;" onclick="resolveReport('${id}', 'Broken Shower')">Mark Done</button>
+        </div>
+    `;
+    container.appendChild(card);
+}
+
+function sendReply(repId) {
+    const input = document.getElementById('input-' + repId);
+    const chatContainer = document.getElementById('chat-history-' + repId);
+    if(!input || !input.value) return;
+
+    const msgDiv = document.createElement('div');
+    msgDiv.style.cssText = "background:#e3f2fd; padding:8px 12px; border-radius:10px; margin-bottom:5px; align-self:flex-end; font-size:0.85rem;";
+    msgDiv.innerHTML = `<strong>You:</strong> ${input.value}`;
+
+    chatContainer.appendChild(msgDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    input.value = '';
+}
+
+function setStatusInProgress(id) {
+    const card = document.getElementById(id);
+    const badge = card.querySelector('.badge');
+    card.style.borderLeft = "5px solid #ff9800"; 
+    badge.style.background = "#fff3e0";
+    badge.style.color = "#e65100";
+    badge.innerText = "IN PROGRESS";
+}
+
+function resolveReport(id, title) {
+    document.getElementById(id).remove();
+    const historyBody = document.getElementById('historyBody');
+    const date = new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'});
+    
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${title}</td><td>${date}</td><td style="color:green; font-weight:bold;">DONE</td>`;
+    historyBody.prepend(tr);
+    alert("Report moved to history.");
+}
+
+function loadApplications() {
+    const body = document.getElementById('applicationsBody');
+    if(!body) return;
+
+    // Test
+    const applicants = [
+        { name: "Jan Novotný", email: "jan.novotny@email.cz", code: "AX-452", status: "Pending" },
+        { name: "Marie Svobodová", email: "marie.s@seznam.cz", code: "BZ-910", status: "Pending" }
+    ];
+
+    body.innerHTML = ""; 
+
+    applicants.forEach((app, index) => {
+        const id = `app-${index}`;
+        const tr = document.createElement('tr');
+        tr.id = id;
+        tr.innerHTML = `
+            <td style="text-align: left; padding-left: 20px;">${app.name}</td>
+            <td>${app.email}</td>
+            <td><code style="background:#eee; padding:2px 5px; border-radius:4px;">${app.code}</code></td>
+            <td class="status-cell" style="font-weight:bold; color:#fbc02d;">${app.status}</td>
+            <td>
+                <div style="display:flex; gap:5px; justify-content:center;">
+                    <button class="approve" style="padding:5px 10px; font-size:11px;" onclick="handleApp('${id}', 'Approved')">Accept</button>
+                    <button class="reject" style="padding:5px 10px; font-size:11px; background:#d32f2f; color:white;" onclick="handleApp('${id}', 'Rejected')">Reject</button>
+                </div>
+            </td>
+        `;
+        body.appendChild(tr);
+    });
+}
+
+function handleApp(rowId, action) {
+    const row = document.getElementById(rowId);
+    const statusCell = row.querySelector('.status-cell');
+    
+    if (action === 'Approved') {
+        statusCell.innerText = "APPROVED";
+        statusCell.style.color = "#2e7d32";
+        row.style.background = "#f1f8e9";
+        alert("Tenant approved and access granted.");
+    } else {
+        
+        row.style.opacity = "0.5";
+        statusCell.innerText = "REJECTED";
+        statusCell.style.color = "#c62828";
+        alert("Application rejected.");
+    }
+    
+    // volání
+}
+
+createTestReport();
+loadApplications();
+updateGarbageTable();
+</script>
+
+</body>
+</html>
