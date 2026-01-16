@@ -463,7 +463,14 @@ document.querySelectorAll(".back").forEach(btn =>
   btn.addEventListener("click", showHome)
 );
 
+
 /* cleaning*/
+function changeWeek(offset) {
+  // 7 dní krát offset
+  currentMonday.setDate(currentMonday.getDate() + (offset * 7));
+  // nová form
+  updateCleaningTable();
+}
 let currentMonday = new Date();
 currentMonday.setDate(currentMonday.getDate() - (currentMonday.getDay() || 7) + 1);
 
