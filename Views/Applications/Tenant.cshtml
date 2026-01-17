@@ -1,649 +1,701 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tenants Portal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tenants Portal - Full Dashboard</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<style>
 
-  
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-    body { background: #eef1f5; overflow-x: hidden; }
-
-    
-    .sidebar {
-      position: fixed; top: 0; left: -260px; width: 260px; height: 100vh;
-      background: #f1f4f8; box-shadow: 4px 0 20px rgba(0,0,0,0.15);
-      transition: left 0.3s ease; z-index: 1000; display: flex; flex-direction: column; justify-content: space-between;
-    }
-    .sidebar.open { left: 0; }
-    .sidebar-menu { padding-top: 80px; }
-    .sidebar-item { display: flex; align-items: center; gap: 16px; padding: 16px 24px; cursor: pointer; color: #333; font-size: 1rem; }
-    .sidebar-item:hover { background: #e3e9f0; }
-    .sidebar-item.active { background: #e3e9f0; font-weight: 600; }
-    .sidebar-divider { height: 1px; background: #cbd5e1; margin: 12px 0; }
-    .sidebar-footer { padding: 24px; text-align: center; margin-bottom: -100px; }
-    .sidebar-footer img { max-width: 220px; opacity: 0.95; }
-
-    
-    .hero { position: relative; height: 55vh; overflow: hidden; }
-    .hero img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; z-index: 0; }
-    .hero::after {
-      content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
-      background: linear-gradient(to bottom, rgba(0,120,130,0.15) 0%, rgba(0,120,130,0.35) 45%, rgba(0,80,90,0.55) 75%, rgba(0,60,70,0.65) 100%);
-    }
-    .hero h1 {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      color: #fff; font-size: 2.5rem; font-weight: 400; z-index: 2; text-shadow: 0 4px 20px rgba(0,0,0,0.35);
-    }
-
-    
-    .top-bar { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; z-index: 2; color: white; }
-    .icon { font-size: 1.6rem; cursor: pointer; position: relative; }
-    .notif { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); }
-    .notif .material-icons-outlined { font-size: 24px; color: white; }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; background: url('https://i.pravatar.cc/100') center/cover; border: 2px solid rgba(255,255,255,0.8); cursor: pointer; }
-
-    
-    .menu { margin-top: 40px; padding: 40px 20px 80px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; }
-    .menu-item { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; }
-    .pill { width: 150px; height: 90px; background: #ffffff; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
-    .circle { width: 48px; height: 48px; border-radius: 12px; background: #f3f6f9; display: flex; align-items: center; justify-content: center; }
-    .circle .material-icons-outlined { font-size: 26px; color: #2c7da0; }
-
-    
-    .chat { position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px; border-radius: 50%; background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; }
-
-    
-    #reportsSection, #documentsSection, #cleaningSection, #garbageSection, #eventsSection { display: none; padding: 40px 20px; }
-
-    
-    .backToMenu { margin-bottom: 20px; padding: 8px 12px; border-radius: 8px; border: 1px solid #2c7da0; background: #fff; color: #2c7da0; cursor: pointer; width: fit-content; }
-    .backToMenu:hover { background: #2c7da0; color: #fff; }
-
-    
-    #reportsForm { display: flex; flex-direction: column; gap: 12px; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); max-width: 500px; margin-bottom: 20px; }
-    #reportsForm input, #reportsForm select, #reportsForm textarea, #reportsForm button { padding: 8px 12px; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc; }
-    #reportsForm textarea { resize: vertical; min-height: 80px; }
-    #reportsForm button { background: #2c7da0; color: white; border: none; cursor: pointer; transition: background 0.2s; }
-    #reportsForm button:hover { background: #1b5e77; }
-    .report-list h3 { margin-bottom: 10px; color: #2c7da0; }
-    .report-item { background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 12px; }
-    .report-item .status { font-weight: bold; margin-bottom: 4px; }
-    .report-item.solved .status { color: green; }
-    .report-item.pending .status { color: orange; }
-
-    
-    .document-item { background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-    .document-item span { font-weight: bold; }
-
-    /* CLEANING & GARBAGE TABLES */
-    .cleaning-table { width: 100%; max-width: 700px; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 16px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    .cleaning-table th, .cleaning-table td { padding: 12px; text-align: center; border-bottom: 1px solid #e0e0e0; }
-    .cleaning-table th { background: #2c7da0; color: #fff; }
-    .cleaning-table td { background: #f9f9f9; }
-    .tenant-name-box { width: 100px; height: 24px; border: 1px solid #999; border-radius: 4px; background: #f0f0f0; margin: auto; }
-    #taskHistory, #garbageHistory { margin-top: 20px; background: #fff; padding: 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width:700px; }
-    #taskHistory div, #garbageHistory div { margin-bottom: 8px; }
+* { box-sizing:border-box; margin:0; padding:0; font-family:Arial,sans-serif; }
+body { background:#eef1f5; overflow-x:hidden; }
 
 
-    
-    .event-item {
-      background:#fff;
-      padding:12px;
-      border-radius:12px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1);
-      margin-bottom:12px;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      position: relative;
-      transition: background 0.2s;
-    }
-    .event-item.completed { background:#e0ffe0; } /* zelená pro dokončené */
-    .event-item.upcoming { border-left:4px solid #2c7da0; } /* modrá pro nadcházející */
-    .event-item.past { opacity:0.7; } /* šedá pro minulost */
-    .event-item button { align-self:flex-end; padding:4px 8px; font-size:0.9rem; border:none; border-radius:6px; cursor:pointer; background:#2c7da0; color:#fff; }
-    .event-item button:hover { background:#1b5e77; }
+.sidebar {
+  position:fixed; top:0; left:-260px; width:260px; height:100vh;
+  background:#f1f4f8; box-shadow:4px 0 20px rgba(0,0,0,.15);
+  transition:.3s; z-index:1500; display:flex; flex-direction:column; justify-content:space-between;
+}
+.sidebar.open { left:0; }
+.sidebar-menu { padding-top:80px; }
+.sidebar-item { display:flex; align-items:center; gap:16px; padding:16px 24px; cursor:pointer; color:#333; }
+.sidebar-item:hover, .sidebar-item.active { background:#e3e9f0; font-weight:600; }
+.sidebar-divider { height:1px; background:#cbd5e1; margin:12px 0; }
 
-    
-#eventForm {
+
+#mainTopBar {
+  position:fixed; top:20px; left:20px; right:20px;
+  display:flex; justify-content:space-between; color:#fff; z-index:1100;
+}
+.icon { font-size:1.6rem; cursor:pointer; }
+.avatar {
+  width:40px; height:40px; border-radius:50%;
+  background:url("https://i.pravatar.cc/100") center/cover;
+  border:2px solid #fff;
+}
+
+
+.hero { position:relative; height:55vh; overflow:hidden; }
+.hero img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
+.hero::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(0,120,130,.2), rgba(0,60,70,.7));
+}
+.hero h1 {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  color:#fff; font-size:2.5rem; font-weight:400;
+  z-index:10; text-shadow:0 4px 15px rgba(0,0,0,0.5);
+}
+
+/* menu */
+.menu { margin-top:40px; padding:40px 20px 80px; display:flex; justify-content:space-around; flex-wrap:wrap; gap:20px; }
+.menu-item {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-direction: column;    
+  align-items: center;       
+  justify-content: center;   
+}
+
+.menu-item .pill {
+  width: 150px;
+  height: 90px;
   background: #fff;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-  max-width: 500px;
-  margin-bottom: 24px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;      
+  justify-content: center;  
+  margin-bottom: 10px;      
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
 }
 
-#eventForm label {
-  font-weight: 600;
-  color: #2c7da0;
+.circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f3f6f9;
+  display: flex;
+  align-items: center;      
+  justify-content: center;  
 }
 
-#eventForm input,
-#eventForm textarea {
-  padding: 10px 12px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-#eventForm textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-#eventForm button {
-  align-self: flex-start;
-  padding: 10px 18px;
-  font-size: 1rem;
-  border-radius: 10px;
-  border: none;
-  background: #2c7da0;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-}
-
-#eventForm button:hover {
-  background: #1b5e77;
-  transform: translateY(-1px);
+.circle span {
+  font-size: 26px;
+  line-height: 1;
+  color: #2c7da0; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 
-.groceries-form {
-  background:#fff;
-  padding:20px;
-  border-radius:16px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.1);
-  max-width:600px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  margin-bottom:30px;
-}
-
-.product-row {
-  display:flex;
-  gap:10px;
-}
-
-.product-row input {
-  flex:1;
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-
-.groceries-form button {
-  align-self:flex-start;
-  padding:10px 16px;
-  border:none;
-  border-radius:10px;
-  background:#2c7da0;
-  color:#fff;
-  cursor:pointer;
-}
-
-.groceries-form button:hover {
-  background:#1b5e77;
-}
-
-.proposal-card {
-  background:#fff;
-  padding:16px;
-  border-radius:14px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
-  margin-bottom:16px;
-}
-
-.proposal-item {
-  border-top:1px solid #e0e0e0;
-  padding-top:10px;
-  margin-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.proposal-actions {
-  display:flex;
-  gap:10px;
-}
-
-.proposal-actions button {
-  padding:6px 12px;
-  border-radius:8px;
-  border:none;
-  cursor:pointer;
-  font-size:0.9rem;
-}
-
-.approve { background:#2c7da0; color:#fff; }
-.reject { background:#ccc; }
-.bought-row {
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.bought-row input[type="number"] {
-  width:80px;
-  padding:6px;
-}
+/* stránky */
+section.page { display:none; padding:40px 20px; }
 
 
+#events { position:fixed; inset:0; padding:20px; overflow:hidden; }
+.events-layout { height:calc(100vh - 80px); overflow:hidden; }
+.events-scroll { height:100%; overflow-y:auto; padding-right:10px; }
 
-  </style>
-</head>
+.back { margin-bottom:20px; padding:8px 12px; border:1px solid #2c7da0; border-radius:8px; background:#fff; color:#2c7da0; cursor:pointer; }
+.back:hover { background:#2c7da0; color:#fff; }
+
+.cleaning-table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 6px 16px rgba(0,0,0,0.1); margin-bottom:20px; }
+.cleaning-table th, .cleaning-table td { padding:12px; text-align:center; border-bottom:1px solid #e0e0e0; }
+.cleaning-table th { background:#2c7da0; color:#fff; font-size:0.9rem; }
+
+.card { background:#fff; padding:16px; border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,.1); margin-bottom:16px; }
+.approve { background:#2c7da0; color:#fff; border:none; border-radius:8px; cursor:pointer; padding:10px 20px; font-weight:bold; }
+.reject { background:#c62828; color:#fff; border:none; border-radius:8px; cursor:pointer; padding:10px 20px; font-weight:bold; margin-left:5px; }
+.cell-input { width:100%; padding:8px; border:1px solid #eee; border-radius:4px; font-size:0.85rem; }
+
+.flex-row { display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start; }
+
+
+</style>
 <body>
-
-<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <div class="sidebar-menu">
-    <div class="sidebar-item active" data-section="home"> <span class="material-icons-outlined">home</span> Homepage </div>
-    <div class="sidebar-item" data-section="reports"> <span class="material-icons-outlined">description</span> Reports </div>
-    <div class="sidebar-item" data-section="documents"> <span class="material-icons-outlined">folder</span> Documents </div>
+    <div class="sidebar-item active" onclick="showHome()"><span class="material-icons-outlined">home</span> Homepage</div>
+    <div class="sidebar-item" onclick="openPage('reports')"><span class="material-icons-outlined">description</span> My Reports</div>
+    <div class="sidebar-item" onclick="openPage('documents')"><span class="material-icons-outlined">folder</span> Documents</div>
     <div class="sidebar-divider"></div>
-    <div class="sidebar-item" data-section="settings"> <span class="material-icons-outlined">settings</span> Settings </div>
+    <div class="sidebar-item" onclick="openPage('settings')"><span class="material-icons-outlined">settings</span> Settings</div>
   </div>
-  <div class="sidebar-footer"> <img src="logo-transparent.png" alt="BV Student Housing"> </div>
 </div>
 
-<!-- HERO -->
-<section class="hero" id="homeSection">
-  <img src="metropolis.jpg" alt="City">
-  <div class="top-bar">
-    <div class="icon" id="menuToggle">☰</div>
-    <div style="display:flex; gap:16px; align-items:center;">
-      <div class="notif"><span class="material-icons-outlined">notifications</span></div>
-      <div class="avatar"></div>
+<div class="top-bar" id="mainTopBar">
+  <div class="icon" id="menuToggle">☰</div>
+<div style="display:flex; align-items:center; gap:15px; position:relative;">
+  <div id="notificationsComponent"></div>
+  <div class="avatar" id="avatarBtn"></div>
+</div>
+</div>
+
+
+<script src="notificationss.js"></script>
+
+
+
+
+    <div id="profileDropdown" style="
+    display:none; 
+    position:absolute; 
+    top:55px; 
+    right:0; 
+    background:white; 
+    padding:20px; 
+    border-radius:12px; 
+    box-shadow:0 10px 30px rgba(0,0,0,0.25); 
+    z-index:2000; 
+    width:240px; 
+    color:#333; 
+    border:1px solid #eee;
+">
+    <div style="text-align:center; margin-bottom:15px;">
+        <p style="font-size:11px; color:#999; text-transform:uppercase;">Tenant Account</p>
+        <p id="userEmail" style="font-weight:bold; color:#1E3A5F; font-size:14px; margin-top:5px;">tenant@portal.com</p>
+    </div>
+
+  
+    <div style="display:flex; flex-direction:column; gap:10px;">
+        <button id="uploadPhotoBtn" style="
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            color: #2c7da0;
+            border: 2px solid #2c7da0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        ">Upload Photo</button>
+        <input type="file" id="uploadPhotoInput" style="display:none;">
+
+        <button onclick="handleLogout()" style="
+            width:100%; 
+            padding:10px; 
+            background:#c62828; 
+            color:white; 
+            border:none; 
+            border-radius:8px; 
+            cursor:pointer; 
+            font-weight:600;
+        ">Logout</button>
+    </div>
+</div>
+
     </div>
   </div>
+</div>
+
+<section class="hero" id="homeHero">
+  <img src="metropolis.jpg">
   <h1>Welcome to Tenants Portal</h1>
 </section>
 
-<!-- MENU -->
-<section class="menu" id="menuSection">
-  <div class="menu-item" id="cleaningCard">
-    <div class="pill"><div class="circle"><span class="material-icons-outlined">cleaning_services</span></div></div>
-    <span>Cleaning schedule</span>
-  </div>
-  <div class="menu-item" id="garbageCard">
-    <div class="pill"><div class="circle"><span class="material-icons-outlined">recycling</span></div></div>
-    <span>Garbage disposal</span>
-  </div>
-  <div class="menu-item" id="eventsCard"><div class="pill"><div class="circle"><span class="material-icons-outlined">event</span></div></div><span>Events</span></div>
+<section class="menu" id="homeMenu">
+  <div class="menu-item" onclick="openPage('cleaning')"><div class="pill"><div class="circle"><span class="material-icons-outlined">cleaning_services</span></div></div><span>Cleaning schedule</span></div>
+  <div class="menu-item" onclick="openPage('garbage')"><div class="pill"><div class="circle"><span class="material-icons-outlined">recycling</span></div></div><span>Garbage disposal</span></div>
+  <div class="menu-item" onclick="openPage('events')"><div class="pill"><div class="circle"><span class="material-icons-outlined">event</span></div></div><span>Events</span></div>
+  <div class="menu-item" onclick="openPage('groceries')"><div class="pill"><div class="circle"><span class="material-icons-outlined">shopping_basket</span></div></div><span>Groceries</span></div>
+  <div class="menu-item" onclick="openPage('sensors')"><div class="pill"><div class="circle"><span class="material-icons-outlined">sensors</span></div></div><span>Sensor</span>
+</div>
 
-  <div class="menu-item" id="groceriesCard">
-  <div class="pill"><div class="circle"><span class="material-icons-outlined">shopping_basket</span></div></div>
-  <span>Groceries</span>
-  </div>
-
-  
-  <div class="menu-item"><div class="pill"><div class="circle"><span class="material-icons-outlined">sensors</span></div></div><span>Sensor</span></div>
 </section>
 
-<!-- REPORTS -->
-<section id="reportsSection">
-  <button class="backToMenu">← Back to Homepage</button>
-  <form id="reportsForm">
-    <label for="issueType">Issue Type</label>
-    <select id="issueType" required>
-      <option value="">-- Select issue --</option>
-      <option value="Plumbing">Plumbing</option>
-      <option value="Electrical">Electrical</option>
-      <option value="Heating">Heating</option>
-      <option value="Internet">Internet</option>
-      <option value="Other">Other</option>
-    </select>
-    <label for="issueDescription">Description</label>
-    <textarea id="issueDescription" placeholder="Describe your issue" required></textarea>
-    <label for="issuePhotos">Upload photos (optional)</label>
-    <input type="file" id="issuePhotos" accept="image/*" multiple />
-    <button type="submit">Submit Report</button>
-  </form>
-  <div class="report-list">
-    <h3>Pending Reports</h3>
-    <div id="pendingReports"></div>
-    <h3>Solved Reports</h3>
-    <div id="solvedReports"></div>
-  </div>
-</section>
+<!-- evets -->
+<section class="page" id="events">
+  <button class="back" onclick="showHome()">← Back to Menu</button>
+  <div class="events-layout">
+    <div class="flex-row events-scroll">
 
-<!-- DOCUMENTS -->
-<section id="documentsSection">
-  <button class="backToMenu">← Back to Homepage</button>
-  <h2>Documents</h2>
-  <div id="documentsList">
-    <div class="document-item"><span>Rental Agreement</span><span>Contract</span></div>
-    <div class="document-item"><span>January Rent</span><span>Invoice</span></div>
-    <div class="document-item"><span>February Rent</span><span>Invoice</span></div>
-    <div class="document-item"><span>Damage Deposit Payment</span><span>Receipt</span></div>
-    <div class="document-item"><span>Maintenance Report</span><span>Report</span></div>
-  </div>
-</section>
+      <div style="flex:2; min-width:500px;">
+        <div class="card" style="padding:25px;">
+          <h3 style="color:#1E3A5F; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+            <span class="material-icons-outlined">add_circle_outline</span> Create Tenant Event
+          </h3>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+            <input type="text" id="evName" class="cell-input" placeholder="Event Name">
+            <input type="date" id="evDate" class="cell-input">
+          </div>
+          <textarea id="evDesc" class="cell-input" placeholder="Event details..." style="margin-top:15px; height:60px;"></textarea>
+          <button class="approve" onclick="createTenantEvent()" style="margin-top:15px; width:100%;">Send Proposal</button>
+        </div>
 
-<!-- CLEANING SCHEDULE -->
-<section id="cleaningSection">
-  <button class="backToMenu">← Back to Homepage</button>
-  <h2>Weekly Cleaning Schedule</h2>
-  <table class="cleaning-table">
-    <thead>
-      <tr>
-        <th>Day</th>
-        <th>Tenant</th>
-        <th>Kitchen</th>
-        <th>Bathroom</th>
-        <th>Living Room</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>Monday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Tuesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Wednesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Thursday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Friday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Saturday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Sunday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-    </tbody>
-  </table>
+        <div class="card" style="padding:25px;">
+          <h3 style="color:#1E3A5F; margin-bottom:15px;">Landlord Events</h3>
+          <table class="cleaning-table" style="box-shadow:none; border:1px solid #eee;">
+            <thead style="background:#f1f4f8;"><tr><th>Event</th><th>Description</th><th>Date</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Gas Inspection</strong></td><td>Maintenance visit scheduled. Please provide access to the technician.</td><td>22. Jan</td></tr>
+            </tbody>
+          </table>
+        </div>
 
-  <h3>Task History</h3>
-  <div id="taskHistory">
-    <div><strong>Done Tasks:</strong> <span id="doneTasks">Monday: Kitchen, Wednesday: Bathroom, Friday: Living Room</span></div>
-    <div><strong>Missed Tasks:</strong> <span id="missedTasks">Tuesday: Bathroom, Thursday: Kitchen</span></div>
-  </div>
-</section>
-
-<!-- GARBAGE DISPOSAL -->
-<section id="garbageSection">
-  <button class="backToMenu">← Back to Homepage</button>
-  <h2>Weekly Garbage Disposal</h2>
-  <table class="cleaning-table">
-    <thead>
-      <tr>
-        <th>Day</th>
-        <th>Tenant</th>
-        <th>Paper</th>
-        <th>Plastic</th>
-        <th>Glass</th>
-        <th>Bio</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>Monday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Tuesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Wednesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Thursday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Friday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Saturday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Sunday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-    </tbody>
-  </table>
-
-  <h3>Garbage History</h3>
-  <div id="garbageHistory">
-    <div><strong>Done Tasks:</strong> <span>Monday: Paper, Wednesday: Glass, Friday: Bio</span></div>
-    <div><strong>Missed Tasks:</strong> <span>Tuesday: Plastic, Thursday: Paper</span></div>
-  </div>
-</section>
-
-<!-- GROCERIES -->
-<section id="groceriesSection" style="display:none; padding:40px 20px;">
-  <button class="backToMenu">← Back to Homepage</button>
-  <h2>Groceries Proposals</h2>
-
-  <!-- FORM -->
-  <form id="groceriesForm" class="groceries-form">
-    <h3>New Grocery Proposal</h3>
-
-    <div id="productsContainer">
-      <div class="product-row">
-        <input type="text" placeholder="Product name (e.g. Milk)">
-        <input type="text" placeholder="Reason (e.g. Ran out)">
+        <div class="card" style="padding:25px;">
+          <h3 style="color:#1E3A5F; margin-bottom:15px;">Active Proposals</h3>
+          <table class="cleaning-table" style="box-shadow:none; border:1px solid #eee;">
+            <thead style="background:#f1f4f8;"><tr><th>Tenant</th><th>Event</th><th>Date</th><th>Action</th></tr></thead>
+            <tbody id="eventProposalsBody"></tbody>
+          </table>
+        </div>
       </div>
+
+      <div style="flex:1; min-width:300px;">
+        <div class="card"><h3 style="color:#2c7da0; margin-bottom:15px;">Upcoming Events</h3><div id="upcomingEventsList"></div></div>
+        <div class="card" style="opacity:0.7;"><h3 style="color:#546e7a; margin-bottom:15px;">Past Events</h3><div id="pastEventsList"></div></div>
+      </div>
+
     </div>
-
-    <button type="button" id="addProductBtn">+ Add another product</button>
-    <button type="submit">Create Proposal</button>
-  </form>
-
-  <!-- PROPOSALS -->
-  <div id="groceriesProposals"></div>
+  </div>
 </section>
 
 
+ <section class="page" id="groceries">
+  <button class="back" onclick="showHome()">← Back to Menu</button>
+  <div class="flex-row">
 
-<!-- EVENTS -->
-<section id="eventsSection">
-  <button class="backToMenu">← Back to Homepage</button>
-  <h2>Upcoming Events</h2>
-
-  <form id="eventForm">
-    <label for="eventName">Event Name</label>
-    <input type="text" id="eventName" placeholder="Event title" required>
     
-    <label for="eventDate">Date</label>
-    <input type="date" id="eventDate" required>
-    
-    <label for="eventDescription">Description</label>
-    <textarea id="eventDescription" placeholder="Describe the event" required></textarea>
-    
-    <button type="submit">Add Event</button>
-  </form>
-
-  <div id="eventsList"></div>
-
-
-
-
-
-
-
-<div class="chat">💬</div>
-
-<script>
-  // Sidebar toggle
-  const sidebar = document.getElementById("sidebar");
-  const menuToggle = document.getElementById("menuToggle");
-  menuToggle.addEventListener("click", () => sidebar.classList.toggle("open"));
-
-  
-  const homeSection = document.getElementById("homeSection");
-  const menuSection = document.getElementById("menuSection");
-  const cleaningSection = document.getElementById("cleaningSection");
-  const garbageSection = document.getElementById("garbageSection");
-  const reportsSection = document.getElementById("reportsSection");
-  const documentsSection = document.getElementById("documentsSection");
-  const eventsSection = document.getElementById("eventsSection");
-
-  
-  const backButtons = document.querySelectorAll(".backToMenu");
-  backButtons.forEach(btn => btn.addEventListener("click", () => {
-    homeSection.style.display = "block";
-    menuSection.style.display = "flex";
-    cleaningSection.style.display = "none";
-    garbageSection.style.display = "none";
-    reportsSection.style.display = "none";
-    documentsSection.style.display = "none";
-    eventsSection.style.display = "none";
-  }));
-
-  
-  document.getElementById("cleaningCard").addEventListener("click", () => {
-    homeSection.style.display = "none"; menuSection.style.display = "none";
-    cleaningSection.style.display = "block";
-  });
-  document.getElementById("garbageCard").addEventListener("click", () => {
-    homeSection.style.display = "none"; menuSection.style.display = "none";
-    garbageSection.style.display = "block";
-  });
-  document.getElementById("eventsCard").addEventListener("click", () => {
-    homeSection.style.display = "none"; menuSection.style.display = "none";
-    groceriesSection.style.display = "none";
-
-    eventsSection.style.display = "block";
-  });
-
-  
-  const sidebarItems = document.querySelectorAll(".sidebar-item");
-  sidebarItems.forEach(item => {
-    const section = item.dataset.section;
-    item.addEventListener("click", () => {
-    
-      homeSection.style.display = "none";
-      menuSection.style.display = "none";
-      cleaningSection.style.display = "none";
-      garbageSection.style.display = "none";
-      reportsSection.style.display = "none";
-      documentsSection.style.display = "none";
-      eventsSection.style.display = "none";
-
-      if (section === "home") {
-        homeSection.style.display = "block";
-        menuSection.style.display = "flex";
-      } else if (section === "reports") {
-        reportsSection.style.display = "block";
-      } else if (section === "documents") {
-        documentsSection.style.display = "block";
-      } else if (section === "settings") {
-        // later settings
-      }
+    <div style="flex:2; min-width:500px;">
 
       
-      sidebar.classList.remove("open");
-    });
-  });
-
-  
-  document.addEventListener("click", (e) => {
-    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-      sidebar.classList.remove("open");
-    }
-  });
-
-  
-  const eventForm = document.getElementById("eventForm");
-  const eventsList = document.getElementById("eventsList");
-  let events = [];
-
-  function getEventStatus(dateStr) {
-    const today = new Date(); today.setHours(0,0,0,0);
-    const eventDate = new Date(dateStr + "T00:00");
-    if (eventDate < today) return "past";
-    return "upcoming";
-  }
-
-  function renderEvents() {
-    eventsList.innerHTML = "";
-    events.sort((a,b) => new Date(a.date) - new Date(b.date));
-    events.forEach((ev, idx) => {
-      const eventDiv = document.createElement("div");
-      const statusClass = ev.completed ? "completed" : getEventStatus(ev.date);
-      eventDiv.className = `event-item ${statusClass}`;
-      eventDiv.innerHTML = `<strong>${ev.name}</strong> <em>(${ev.date})</em><p>${ev.description}</p><button>${ev.completed ? "Completed" : "Mark as Completed"}</button>`;
-      const btn = eventDiv.querySelector("button");
-      if(ev.completed) btn.disabled = true;
-      btn.addEventListener("click", () => {
-        events[idx].completed = true;
-        renderEvents();
-      });
-      eventsList.appendChild(eventDiv);
-    });
-  }
-
-  eventForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const name = document.getElementById("eventName").value;
-    const date = document.getElementById("eventDate").value;
-    const description = document.getElementById("eventDescription").value;
-    events.push({name, date, description, completed:false});
-    eventForm.reset();
-    renderEvents();
-  });
-
-  const groceriesSection = document.getElementById("groceriesSection");
-
-document.getElementById("groceriesCard").addEventListener("click", () => {
-  homeSection.style.display = "none";
-  menuSection.style.display = "none";
-  cleaningSection.style.display = "none";
-  garbageSection.style.display = "none";
-  reportsSection.style.display = "none";
-  documentsSection.style.display = "none";
-  eventsSection.style.display = "none";
-
-  groceriesSection.style.display = "block";
-});
-
-
-const groceriesForm = document.getElementById("groceriesForm");
-const productsContainer = document.getElementById("productsContainer");
-const groceriesProposals = document.getElementById("groceriesProposals");
-const addProductBtn = document.getElementById("addProductBtn");
-
-addProductBtn.addEventListener("click", () => {
-  const row = document.createElement("div");
-  row.className = "product-row";
-  row.innerHTML = `
-    <input type="text" placeholder="Product name">
-    <input type="text" placeholder="Reason">
-  `;
-  productsContainer.appendChild(row);
-});
-
-groceriesForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  const rows = productsContainer.querySelectorAll(".product-row");
-  let itemsHTML = "";
-
-  rows.forEach(row => {
-    const inputs = row.querySelectorAll("input");
-    itemsHTML += `
-      <div class="proposal-item">
-        <strong>${inputs[0].value}</strong>
-        <em>${inputs[1].value}</em>
-
-        <div class="proposal-actions">
-          <button class="approve">Approve</button>
-          <button class="reject">Reject</button>
-        </div>
-
-        <div class="bought-row">
-          <label><input type="checkbox"> Bought</label>
-          <input type="number" placeholder="€">
-        </div>
+      <div class="card" style="padding:25px;">
+        <h3 style="color:#1E3A5F; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+          <span class="material-icons-outlined">add_shopping_cart</span> Create Grocery Proposal
+        </h3>
+        <textarea id="groceryDesc" class="cell-input" placeholder="Write products you want to buy..." style="height:60px;"></textarea>
+        <button class="approve" onclick="createGroceryProposal()" style="margin-top:15px; width:100%;">Submit Proposal</button>
       </div>
-    `;
-  });
 
-  const proposal = document.createElement("div");
-  proposal.className = "proposal-card";
-  proposal.innerHTML = `<h4>Grocery Proposal</h4>${itemsHTML}`;
+    
+      <div class="card" style="padding:25px; margin-top:20px;">
+        <h3 style="color:#1E3A5F; margin-bottom:15px;">Your Active Grocery Proposals</h3>
+        <table class="cleaning-table" style="box-shadow:none; border:1px solid #eee;">
+          <thead style="background:#f1f4f8;"><tr><th>Description</th><th>Approvals</th></tr></thead>
+          <tbody id="groceryActiveBody"></tbody>
+        </table>
+      </div>
 
-  groceriesProposals.prepend(proposal);
-
-  groceriesForm.reset();
-  productsContainer.innerHTML = `
-    <div class="product-row">
-      <input type="text" placeholder="Product name">
-      <input type="text" placeholder="Reason">
     </div>
-  `;
+
+    
+    <div style="flex:1; min-width:300px;">
+      <div class="card">
+        <h3 style="color:#2c7da0; margin-bottom:15px;">Proposals from other Tenants</h3>
+        <table class="cleaning-table" style="box-shadow:none; border:1px solid #eee;">
+          <thead style="background:#f1f4f8;"><tr><th>Tenant</th><th>Description</th><th>Action</th></tr></thead>
+          <tbody id="groceryOtherBody"></tbody>
+        </table>
+      </div>
+
+      
+      <div class="card" style="margin-top:20px;">
+        <h3 style="color:#2c7da0; margin-bottom:15px;">Approved Groceries (Upload Receipt)</h3>
+        <div id="approvedGroceriesList"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="page" id="cleaning">
+  <button class="back" onclick="showHome()">← Back to Menu</button>
+  <div class="flex-row">
+    <div style="flex:2; min-width:600px;">
+      <h2 style="color:#1E3A5F; margin-bottom:20px;">Weekly Cleaning Schedule</h2>
+      <table class="cleaning-table">
+        <thead><tr><th>Day & Date</th><th>Kitchen</th><th>Bathroom</th><th>Living room</th><th>Storage room</th></tr></thead>
+        <tbody id="cleaningBody"></tbody>
+      </table>
+    </div>
+    <div style="flex:1; min-width:300px;">
+      <h2 style="color:#1E3A5F; margin-bottom:20px;">Cleaning History</h2>
+      <table class="cleaning-table" style="font-size:0.85rem; border:1px solid #eee;">
+        <thead style="background:#546e7a;"><tr><th>Date</th><th>Area</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>12. Jan</td><td>Storage room</td><td><span style="color:#2e7d32; font-weight:bold;">● DONE</span></td></tr>
+          <tr><td>11. Jan</td><td>Kitchen</td><td><span style="color:#c62828; font-weight:bold;">● MISSED</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="garbage">
+  <button class="back" onclick="showHome()">← Back to Menu</button>
+  <div class="flex-row">
+    <div style="flex:2; min-width:600px;">
+      <h2 style="color:#1E3A5F; margin-bottom:20px;">Garbage Responsibility</h2>
+      <table class="cleaning-table">
+        <thead><tr><th>Week Period</th><th>Categories</th><th>Assigned Tenant</th><th>Action</th></tr></thead>
+        <tbody id="garbageBody"></tbody>
+      </table>
+    </div>
+    <div style="flex:1; min-width:300px;">
+      <h2 style="color:#1E3A5F; margin-bottom:20px;">Garbage History</h2>
+      <table class="cleaning-table" style="font-size:0.85rem; border:1px solid #eee;">
+        <thead style="background:#546e7a;"><tr><th>Week</th><th>Tenant</th><th>Status</th></tr></thead>
+        <tbody><tr><td>Week 01</td><td>Jan Marek</td><td><span style="color:#2e7d32; font-weight:bold;">● DONE</span></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="reports">
+  <button class="back" onclick="showHome()">← Back to Menu</button>
+  
+  <div class="flex-row">
+    <div style="flex: 2; min-width: 500px;">
+      
+      
+      <div class="card">
+        <h3>Report New Issue</h3>
+        <input type="text" id="reportTitle" class="cell-input" placeholder="Title" style="margin:5px 0;">
+        <textarea id="reportDesc" class="cell-input" placeholder="Description" style="margin:5px 0; height:60px;"></textarea>
+        <input type="date" id="reportDate" class="cell-input" style="margin:5px 0;">
+        <input type="file" id="reportPhoto" style="margin:5px 0;">
+        <button class="approve" onclick="addNewReport()" style="margin-top:5px; width:100%;">Submit Report</button>
+      </div>
+      
+      
+      <h3 style="margin-top:20px;">Active Issues</h3>
+      <div id="activeReportsContainer"></div>
+      
+    </div>
+    
+    <div style="flex: 1; min-width: 300px;">
+      
+      <h3>Resolved History</h3>
+      <table class="cleaning-table" style="font-size: 12px; border: 1px solid #eee;">
+        <thead style="background:#eceff1;"><tr><th>Title</th><th>Date</th><th>Status</th></tr></thead>
+        <tbody id="reportHistoryBody"></tbody>
+      </table>
+    </div>
+    
+  </div>
+</section>
+
+
+<section class="page" id="documents">
+  <button class="back" onclick="showHome()">← Back to Menu</button>
+  <div class="card">
+    <h3 style="margin-bottom:15px;">Shared Documents</h3>
+    <table class="cleaning-table">
+        <thead style="background:#f1f4f8;"><tr><th>File Name</th><th>Category</th><th>Action</th></tr></thead>
+        <tbody>
+            <tr><td>Rental_Agreement.pdf</td><td>Contract</td><td><button class="approve" style="padding:5px 10px;">Download</button></td></tr>
+            <tr><td>House_Rules.pdf</td><td>Info</td><td><button class="approve" style="padding:5px 10px;">Download</button></td></tr>
+        </tbody>
+    </table>
+  </div>
+</section>
+<script>
+
+
+
+
+const CURRENT_TENANT = "You";
+const TOTAL_TENANTS = 5;
+
+
+async function apiRequest(endpoint, method = 'GET', body = null, isFormData = false) {
+    const options = { method, headers: {} };
+    if (body && !isFormData) {
+        options.headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(body);
+    } else if (body && isFormData) {
+        options.body = body; 
+    }
+    const res = await fetch(endpoint, options);
+    if (!res.ok) throw new Error(`API Error ${res.status}`);
+    return res.json();
+}
+
+// --- sidebar ---
+const sidebar = document.getElementById("sidebar");
+const menuToggle = document.getElementById("menuToggle");
+
+menuToggle.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle("open"); };
+document.onclick = (e) => { if(!sidebar.contains(e.target) && e.target !== menuToggle) sidebar.classList.remove("open"); };
+
+sidebar.addEventListener("mouseleave", () => {
+    if (document.getElementById("homeHero").style.display !== "none") sidebar.classList.remove("open");
 });
 
+function openPage(id) {
+    document.getElementById('homeHero').style.display = 'none';
+    document.getElementById('homeMenu').style.display = 'none';
+    document.getElementById('mainTopBar').style.display = 'none';
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    document.getElementById(id).style.display = 'block';
 
-  
+    if (id === 'cleaning') initCleaning();
+    if (id === 'garbage') initGarbage();
+    if (id === 'events') fetchAndRenderEvents();
+
+    sidebar.classList.remove("open");
+}
+
+function showHome() {
+    document.getElementById('homeHero').style.display = 'block';
+    document.getElementById('homeMenu').style.display = 'flex';
+    document.getElementById('mainTopBar').style.display = 'flex';
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+}
+
+// --- profile ---
+const avatarBtn = document.getElementById("avatarBtn");
+const profileDropdown = document.getElementById("profileDropdown");
+const uploadPhotoBtn = document.getElementById("uploadPhotoBtn");
+const uploadPhotoInput = document.getElementById("uploadPhotoInput");
+
+
+avatarBtn.onclick = (e) => {
+    e.stopPropagation();
+    profileDropdown.style.display = profileDropdown.style.display === "block" ? "none" : "block";
+};
+document.addEventListener("click", (e) => {
+    if (profileDropdown.style.display === "block" && !profileDropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
+        profileDropdown.style.display = "none";
+    }
+});
+
+// Upload profile
+uploadPhotoBtn.onclick = () => uploadPhotoInput.click();
+uploadPhotoInput.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const res = await fetch('/api/avatar', { method:'POST', body: formData }).then(r => r.json());
+    avatarBtn.style.background = `url(${res.url}) center/cover`;
+};
+
+// --- cleaning---
+async function initCleaning() {
+    const body = document.getElementById("cleaningBody");
+    body.innerHTML = "";
+    const schedule = await apiRequest('/api/cleaning');
+
+    schedule.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td><strong>${item.day}</strong><br><small>${item.date}</small></td>
+                        <td><div style="color:#2c7da0; font-weight:bold;">${item.kitchen}</div></td>
+                        <td><div style="color:#2c7da0; font-weight:bold;">${item.bathroom}</div></td>
+                        <td><div style="color:#2c7da0; font-weight:bold;">${item.livingRoom}</div></td>
+                        <td><div style="color:#2c7da0; font-weight:bold;">${item.storage}</div></td>`;
+        body.appendChild(tr);
+    });
+}
+
+// --- garbage ---
+async function initGarbage() {
+    const body = document.getElementById('garbageBody');
+    body.innerHTML = "";
+    const garbageData = await apiRequest('/api/garbage');
+
+    garbageData.forEach((item, i) => {
+        const tr = document.createElement('tr');
+        if (i === 0) tr.style.background = "#f0f9ff";
+        tr.innerHTML = `<td><strong>${item.period}</strong><br><small>${item.range}</small></td>
+                        <td>${item.categories.map(c => `<span class="material-icons-outlined">${c}</span>`).join('')}</td>
+                        <td><div style="color:#2c7da0; font-weight:bold;">${item.tenant}</div></td>
+                        <td>${item.isCurrent ? '<button class="approve" style="font-size:10px;" onclick="markGarbageDone(\''+item.id+'\')">Mark Done</button>' : ''}</td>`;
+        body.appendChild(tr);
+    });
+}
+
+async function markGarbageDone(id) {
+    await apiRequest(`/api/garbage/${id}/done`, 'POST');
+    initGarbage();
+}
+
+// --- events---
+async function fetchAndRenderEvents() {
+    const proposalsBody = document.getElementById('eventProposalsBody');
+    const upcomingList = document.getElementById('upcomingEventsList');
+    const pastList = document.getElementById('pastEventsList');
+
+    proposalsBody.innerHTML = ""; upcomingList.innerHTML = ""; pastList.innerHTML = "";
+
+    const eventsData = await apiRequest('/api/events');
+
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    eventsData.forEach(ev => {
+        const evDate = new Date(ev.date);
+        const tr = document.createElement('tr');
+
+        if (ev.creator === CURRENT_TENANT) {
+            tr.innerHTML = `<td>${ev.creator}</td><td><strong>${ev.name}</strong><br><small>${ev.desc}</small></td><td>${evDate.toLocaleDateString()}</td><td>Approved ${ev.approvals.length} / ${TOTAL_TENANTS-1}</td>`;
+        } else {
+            tr.innerHTML = `<td>${ev.creator}</td><td><strong>${ev.name}</strong><br><small>${ev.desc}</small></td><td>${evDate.toLocaleDateString()}</td>
+                            <td><button class="approve" onclick="approveEvent(${ev.id})">Approve</button>
+                                <button class="reject" onclick="rejectEvent(${ev.id})">Reject</button></td>`;
+        }
+        proposalsBody.appendChild(tr);
+
+        const card = document.createElement('div'); card.className='card';
+        card.innerHTML=`<strong>${ev.name}</strong><br><small>${evDate.toLocaleDateString()}</small><p style="font-size:0.85rem;">${ev.desc}</p>`;
+        if (ev.approvals.length >= TOTAL_TENANTS-1) {
+            if(evDate < today) pastList.appendChild(card); else upcomingList.appendChild(card);
+        }
+    });
+}
+
+async function createTenantEvent() {
+    const name = evName.value; const date = evDate.value; const desc = evDesc.value;
+    if(!name||!date) return alert("Please fill name and date");
+    await apiRequest('/api/events', 'POST', { name, date, desc });
+    evName.value = ""; evDate.value=""; evDesc.value="";
+    fetchAndRenderEvents();
+}
+
+async function approveEvent(id){ await apiRequest(`/api/events/${id}/approve`, 'POST'); fetchAndRenderEvents(); }
+async function rejectEvent(id){ await apiRequest(`/api/events/${id}/reject`, 'POST'); fetchAndRenderEvents(); }
+
+// --- reports ---
+async function addNewReport() {
+    const title = reportTitle.value.trim();
+    const desc = reportDesc.value.trim();
+    const dateInput = reportDate.value;
+    const fileInput = document.getElementById('reportPhoto');
+    if (!title || !desc || !dateInput) return alert("Please fill Title, Description, and Date");
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('desc', desc);
+    formData.append('date', dateInput);
+    if(fileInput.files[0]) formData.append('photo', fileInput.files[0]);
+
+    await fetch('/api/reports', { method:'POST', body: formData });
+    reportTitle.value=""; reportDesc.value=""; reportDate.value=""; fileInput.value="";
+    fetchActiveReports();
+}
+
+async function fetchActiveReports() {
+    const container = document.getElementById('activeReportsContainer');
+    container.innerHTML = "";
+    const reportsData = await apiRequest('/api/reports/active');
+
+    reportsData.forEach(r => {
+        const card = document.createElement('div');
+        card.className='card';
+        card.style.borderLeft = "5px solid #ffa000";
+        card.style.marginBottom = "10px";
+        card.id=r.id;
+
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <span id="status-${r.id}" style="font-size:10px; font-weight:bold; background:#fff3e0; color:#e65100; padding:3px 8px; border-radius:10px;">${r.status}</span>
+            <small style="color:#999;">${r.date}</small>
+          </div>
+          <strong>${r.title}</strong>
+          <p style="font-size:0.9rem; margin:5px 0 10px;">${r.desc}</p>
+          ${r.photoURL ? `<a href="${r.photoURL}" target="_blank">View Photo</a>` : `<input type="file" onchange="uploadReportPhoto('${r.id}', this)">`}
+          <div id="chat-box-${r.id}" style="background:#f8f9fa; padding:10px; max-height:100px; overflow-y:auto; margin-top:10px; border-radius:8px; display:flex; flex-direction:column; gap:5px;"></div>
+          <div style="display:flex; gap:5px; margin-top:5px;">
+            <input type="text" id="chat-input-${r.id}" class="cell-input" placeholder="Reply to landlord...">
+            <button class="approve" onclick="sendReply('${r.id}')">Send</button>
+          </div>
+        `;
+
+        const chatBox = card.querySelector(`#chat-box-${r.id}`);
+        r.messages.forEach(m => {
+            const msg = document.createElement('div');
+            msg.style.cssText = "background:#e3f2fd; padding:5px 10px; border-radius:8px; align-self:flex-end; font-size:0.8rem;";
+            msg.innerHTML = `<strong>${m.author}:</strong> ${m.text}`;
+            chatBox.appendChild(msg);
+        });
+
+        container.prepend(card);
+    });
+}
+
+async function sendReply(id){
+    const input = document.getElementById('chat-input-'+id);
+    if(!input.value) return;
+    await apiRequest(`/api/reports/${id}/message`, 'POST', { text: input.value });
+    input.value="";
+    fetchActiveReports();
+}
+
+async function setReportStatus(id, status) {
+    await apiRequest(`/api/reports/${id}/status`, 'POST', { status });
+    fetchActiveReports();
+}
+
+// --- upload photo---
+async function uploadReportPhoto(id, input){
+    const file = input.files[0];
+    if(!file) return;
+    const formData = new FormData();
+    formData.append('photo', file);
+    await fetch(`/api/reports/${id}/photo`, { method:'POST', body: formData });
+    fetchActiveReports();
+}
+
+// --- groceriies ---
+async function createGroceryProposal() {
+    const desc = groceryDesc.value.trim();
+    if(!desc) return alert("Please write products");
+    await apiRequest('/api/groceries', 'POST', { desc });
+    groceryDesc.value="";
+    fetchGroceries();
+}
+
+async function approveGrocery(id){ await apiRequest(`/api/groceries/${id}/approve`, 'POST'); fetchGroceries(); }
+async function rejectGrocery(id){ await apiRequest(`/api/groceries/${id}/reject`, 'POST'); fetchGroceries(); }
+
+async function uploadReceipt(id, input){
+    const file = input.files[0];
+    if(!file) return;
+    const formData = new FormData();
+    formData.append('receipt', file);
+    await fetch(`/api/groceries/${id}/receipt`, { method:'POST', body: formData });
+    fetchGroceries();
+}
+
+async function fetchGroceries(){
+    const activeBody = document.getElementById('groceryActiveBody');
+    const otherBody = document.getElementById('groceryOtherBody');
+    const approvedList = document.getElementById('approvedGroceriesList');
+
+    activeBody.innerHTML = ""; otherBody.innerHTML = ""; approvedList.innerHTML="";
+
+    const groceriesData = await apiRequest('/api/groceries');
+
+    groceriesData.forEach(g => {
+        if(g.creator===CURRENT_TENANT && g.approvals.length < TOTAL_TENANTS-1) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${g.desc}</td><td>${g.approvals.length} / ${TOTAL_TENANTS-1}</td>`;
+            activeBody.appendChild(tr);
+        } else if (g.creator!==CURRENT_TENANT && g.approvals.length < TOTAL_TENANTS-1) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${g.creator}</td><td>${g.desc}</td>
+                <td><button class="approve" onclick="approveGrocery(${g.id})">Approve</button>
+                    <button class="reject" onclick="rejectGrocery(${g.id})">Reject</button>
+                </td>`;
+            otherBody.appendChild(tr);
+        } else if (g.approvals.length >= TOTAL_TENANTS-1) {
+            const div = document.createElement('div'); div.className='card'; div.style.marginBottom="10px";
+            div.innerHTML=`<strong>${g.creator}:</strong> ${g.desc}<br>`;
+            if(!g.receipt) div.innerHTML += `<input type="file" onchange="uploadReceipt(${g.id}, this)" style="margin-top:5px;">`;
+            else div.innerHTML += `<a href="${g.receipt}" target="_blank">View Receipt</a>`;
+            approvedList.appendChild(div);
+        }
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchActiveReports();
+    fetchGroceries();
+    initCleaning();
+    initGarbage();
+    fetchAndRenderEvents();
+});
+
 </script>
-
-
-
 </body>
 </html>
