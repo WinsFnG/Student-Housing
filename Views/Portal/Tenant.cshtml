@@ -252,12 +252,12 @@
     <div class="sidebar-divider"></div>
     <div class="sidebar-item" data-section="settings"> <span class="material-icons-outlined">settings</span> Settings </div>
   </div>
-  <div class="sidebar-footer"> <img src="logo-transparent.png" alt="BV Student Housing"> </div>
+  <div class="sidebar-footer"> <img src="~/images/logo-transparent.png" alt="BV Student Housing"> </div>
 </div>
 
 <!-- HERO -->
 <section class="hero" id="homeSection">
-  <img src="metropolis.jpg" alt="City">
+  <img src="~/images/metropolis.jpg" alt="City">
   <div class="top-bar">
     <div class="icon" id="menuToggle">☰</div>
     <div style="display:flex; gap:16px; align-items:center;">
@@ -337,20 +337,20 @@
     <thead>
       <tr>
         <th>Day</th>
-        <th>Tenant</th>
+        <th>Storage Room</th>
         <th>Kitchen</th>
         <th>Bathroom</th>
         <th>Living Room</th>
       </tr>
     </thead>
-    <tbody>
-      <tr><td>Monday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Tuesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Wednesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Thursday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Friday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Saturday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Sunday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+    <tbody id="cleaningtable">
+      <tr><td>Monday</td><td data-place="storage"><input type="text" disabled></td><td data-place="kitchen"><input type="text" disabled></td><td data-place="bathroom"><input type="text" disabled></td><td data-place="living_room"><input type="text" disabled></td></tr>
+      <tr><td>Tuesday</td><td data-place="storage"><input type="text" disabled></td><td data-place="kitchen"><input type="text" disabled></td><td data-place="bathroom"><input type="text" disabled></td><td data-place="living_room"><input type="text" disabled></td></tr>
+      <tr><td>Wednesday</td><td data-place="storage"><input type="text" disabled></td><td data-place="kitchen"><input type="text" disabled></td><td data-place="bathroom"><input type="text" disabled></td><td data-place="living_room"><input type="text" disabled></td></tr>
+      <tr><td>Thursday</td><td data-place="storage"><input type="text" disabled></td><td data-place="kitchen"><input type="text" disabled></td><td data-place="bathroom"><input type="text" disabled></td><td data-place="living_room"><input type="text" disabled></td></tr>
+      <tr><td>Friday</td><td data-place="storage"><input type="text" disabled></td><td data-place="kitchen"><input type="text" disabled></td><td data-place="bathroom"><input type="text" disabled></td><td data-place="living_room"><input type="text" disabled></td></tr>
+      <tr><td>Saturday</td><td data-place="storage"><input type="text" disabled></td><td data-place="kitchen"><input type="text" disabled></td><td data-place="bathroom"><input type="text" disabled></td><td data-place="living_room"><input type="text" disabled></td></tr>
+      <tr><td>Sunday</td><td data-place="storage"><input type="text" disabled></td><td data-place="kitchen"><input type="text" disabled></td><td data-place="bathroom"><input type="text" disabled></td><td data-place="living_room"><input type="text" disabled></td></tr>
     </tbody>
   </table>
 
@@ -377,13 +377,13 @@
       </tr>
     </thead>
     <tbody>
-      <tr><td>Monday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Tuesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Wednesday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Thursday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Friday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Saturday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
-      <tr><td>Sunday</td><td><div class="tenant-name-box"></div></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td><td><input type="checkbox" disabled></td></tr>
+      <tr><td>Monday</td><td><div class="tenant-name-box"></div></td><td data-place="storage"><input type="checkbox" disabled></td><td data-place="kitchen"><input type="checkbox" disabled></td><td data-place="bathroom"><input type="checkbox" disabled></td><td data-place="living_room"><input type="checkbox" disabled></td></tr>
+      <tr><td>Tuesday</td><td><div class="tenant-name-box"></div></td><td data-place="storage"><input type="checkbox" disabled></td><td data-place="kitchen"><input type="checkbox" disabled></td><td data-place="bathroom"><input type="checkbox" disabled></td><td data-place="living_room"><input type="checkbox" disabled></td></tr>
+      <tr><td>Wednesday</td><td><div class="tenant-name-box"></div></td><td data-place="storage"><input type="checkbox" disabled></td><td data-place="kitchen"><input type="checkbox" disabled></td><td data-place="bathroom"><input type="checkbox" disabled></td><td data-place="living_room"><input type="checkbox" disabled></td></tr>
+      <tr><td>Thursday</td><td><div class="tenant-name-box"></div></td><td data-place="storage"><input type="checkbox" disabled></td><td data-place="kitchen"><input type="checkbox" disabled></td><td data-place="bathroom"><input type="checkbox" disabled></td><td data-place="living_room"><input type="checkbox" disabled></td></tr>
+      <tr><td>Friday</td><td><div class="tenant-name-box"></div></td><td data-place="storage"><input type="checkbox" disabled></td><td data-place="kitchen"><input type="checkbox" disabled></td><td data-place="bathroom"><input type="checkbox" disabled></td><td data-place="living_room"><input type="checkbox" disabled></td></tr>
+      <tr><td>Saturday</td><td><div class="tenant-name-box"></div></td><td data-place="storage"><input type="checkbox" disabled></td><td data-place="kitchen"><input type="checkbox" disabled></td><td data-place="bathroom"><input type="checkbox" disabled></td><td data-place="living_room"><input type="checkbox" disabled></td></tr>
+      <tr><td>Sunday</td><td><div class="tenant-name-box"></div></td><td data-place="storage"><input type="checkbox" disabled></td><td data-place="kitchen"><input type="checkbox" disabled></td><td data-place="bathroom"><input type="checkbox" disabled></td><td data-place="living_room"><input type="checkbox" disabled></td></tr>
     </tbody>
   </table>
 
@@ -427,13 +427,13 @@
 
   <form id="eventForm">
     <label for="eventName">Event Name</label>
-    <input type="text" id="eventName" placeholder="Event title" required>
+    <input name="title" type="text" id="eventName" placeholder="Event title" required>
     
     <label for="eventDate">Date</label>
-    <input type="date" id="eventDate" required>
+    <input name="date" type="date" id="eventDate" required>
     
     <label for="eventDescription">Description</label>
-    <textarea id="eventDescription" placeholder="Describe the event" required></textarea>
+    <textarea name="description" id="eventDescription" placeholder="Describe the event" required></textarea>
     
     <button type="submit">Add Event</button>
   </form>
@@ -462,6 +462,57 @@
   const reportsSection = document.getElementById("reportsSection");
   const documentsSection = document.getElementById("documentsSection");
   const eventsSection = document.getElementById("eventsSection");
+  const eventTitle = document.getElementById("eventName")
+  const eventDate = document.getElementById("eventDate")
+  const eventDescription = document.getElementById("eventDescription")
+  const eventForm = document.getElementById("eventForm")
+
+  function GetWeekDay(day){
+    const weekDay = [
+      "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+    ]
+
+    return weekDay[new Date(day).getDay()]
+  }
+
+  function FillCleanTable(data){
+    const rows = document.querySelectorAll("#cleaningtable tr")
+
+    rows.forEach(row => {
+
+      const weekDay = row.children[0].innerText
+
+      const record = data.find(d => GetWeekDay(d.date) === weekDay)
+      if (!record) {
+        return
+      }
+
+      const cells = row.querySelectorAll("td")
+
+      cells.forEach(cell => {
+        let room = cell.dataset.place
+
+        let person = record[room]
+
+        const input = cell.querySelector("input")
+
+        if (input){
+          input.value = person
+        }
+
+      })
+    })
+  }
+
+  async function loadTableCleaning(){
+    const response = await fetch('/api/Features/CleaningSchedule')
+    console.log(response)
+    const data = await response.json()
+
+    FillCleanTable(data)
+  }
+
+  document.addEventListener('DOMContentLoaded', loadTableCleaning())
 
   
   const backButtons = document.querySelectorAll(".backToMenu");
@@ -475,6 +526,20 @@
     eventsSection.style.display = "none";
   }));
 
+  eventForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const event = {
+          title : eventTitle.value,
+          date : eventDate.value,
+          description : eventDescription.value
+      }
+
+      fetch('/api/Features/Events', {
+          method : 'POST',
+          headers : {'Content-Type' : 'application/json'},
+          body : JSON.stringify(event)
+      })
+  })
   
   document.getElementById("cleaningCard").addEventListener("click", () => {
     homeSection.style.display = "none"; menuSection.style.display = "none";
@@ -529,7 +594,6 @@
   });
 
   
-  const eventForm = document.getElementById("eventForm");
   const eventsList = document.getElementById("eventsList");
   let events = [];
 
@@ -539,6 +603,22 @@
     if (eventDate < today) return "past";
     return "upcoming";
   }
+
+  async function Loadevents(){
+     const response = await fetch('/api/Features/Events')
+     const data = await response.json()
+     data.forEach(e => {
+        const date = new Date(e.event_date + "Z"); 
+        const eventDiv = document.createElement("div");
+        const statusClass = e.completed ? "completed" : getEventStatus(date);
+        eventDiv.className = `event-item ${statusClass}`;
+        eventDiv.innerHTML = `<strong>${e.title}</strong> <em>(${date.getDate()} / ${date.getMonth() + 1} )</em><p>${e.description}</p><button>${e.completed ? "Completed" : "Mark as Completed"}</button>`;
+        const btn = eventDiv.querySelector("button");
+        eventsList.appendChild(eventDiv);
+     })
+  }
+
+  document.addEventListener('DOMContentLoaded', Loadevents())
 
   function renderEvents() {
     eventsList.innerHTML = "";

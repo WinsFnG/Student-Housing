@@ -152,8 +152,8 @@
         <div id="notificationsComponent"></div>
     </div>
     <div class="auth-buttons">
-        <a href="register.html" class="btn">Sign Up</a>
-        <a href="login.html" class="btn">Log In</a>
+        <a asp-controller="Home" asp-action="Signup" class="btn">Sign Up</a>
+        <a asp-controller="Home" asp-action="Login" class="btn">Log In</a>
     </div>
 </div>
 
@@ -161,8 +161,8 @@
 </header>
 
 <nav>
-    <a href="#">Home</a>
-    <a href="apply.html">Apply</a>
+    <a asp-controller="Home" asp-action="Index">Home</a>
+    <a asp-controller="Home" asp-action="Application">Apply</a>
     <a href="#">Services</a>
     <a href="#">FAQ</a>
     <a href="#">About</a>
@@ -186,22 +186,17 @@ const gallery = document.getElementById('gallery');
 
 
 const images = [
-    'image.png',
-    'image1.png',
-    'image3.jpg',
-    'image4.jpg',
-    'image9.jpg',
-    'image6.jpg',
-    'image7.jpg',
-    'image8.jpg'
+    '/images/image.png',
+    '/images/image1.png',
+    '/images/image3.jpg',
+    '/images/image4.jpg',
+    '/images/image9.jpg',
+    '/images/image6.jpg',
+    '/images/image7.jpg',
+    '/images/image8.jpg'
 ];
 
-
-for (let i = 0; i < 6; i++) {
-    const img = document.createElement('img');
-    img.src = images[i % images.length];
-    gallery.appendChild(img);
-}
+gallery.innerHTML = images.concat(images).map(src => `<img src="${src}">`).join("")
 
 let scrollAmount = 0;
 const scrollSpeed = 1; 
@@ -210,16 +205,8 @@ function scrollGallery() {
     scrollAmount += scrollSpeed;
     gallery.style.transform = `translateX(-${scrollAmount}px)`;
 
-    
-    const firstImg = gallery.children[0];
-    if (scrollAmount >= firstImg.offsetWidth + 30) { 
-        scrollAmount -= firstImg.offsetWidth + 30;
-
-        
-        gallery.appendChild(firstImg);
-
-        
- 
+    if (scrollAmount >= gallery.scrollWidth / 2){
+        scrollAmount = 0
     }
 
     requestAnimationFrame(scrollGallery);

@@ -37,7 +37,7 @@ if (target) {
         popup.style.display = 'none';
     });
 
-    // Zamezení zavření popupu při kliknutí dovnitř něj
+    // Zamezení zavření popupu při kliknutí dovnitř ně
     popup.addEventListener('click', (e) => {
         e.stopPropagation();
     });

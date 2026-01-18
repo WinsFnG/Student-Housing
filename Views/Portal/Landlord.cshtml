@@ -193,7 +193,7 @@ section.page { display:none; padding:40px 20px; }
 </div>
 
 <section class="hero" id="home">
-  <img src="metropolis.jpg">
+  <img src="~/images/metropolis.jpg">
   <h1>Welcome to Landlord Portal</h1>
 </section>
 
@@ -501,18 +501,22 @@ document.addEventListener("click", async e => {
   if (e.target.classList.contains("save-row")) {
     const row = e.target.closest("tr");
     const inputs = row.querySelectorAll("input");
-    const payload = {};
+
+    let cleaningSchedule = {
+        date : inputs[0].dataset.date
+    }
 
     inputs.forEach(i => {
-      payload[i.dataset.room] = i.value;
+        cleaningSchedule[i.dataset.room] = i.value.trim()
     });
 
-    await API.saveCleaningWeek({
-      date: inputs[0].dataset.date,
-      assignments: payload
-    });
+    console.log(cleaningSchedule)
 
-    alert("Row saved (demo)");
+    await fetch('/api/Features/CleaningSchedule', {
+        method : 'POST',
+        headers : {'Content-Type' : 'application/json'},
+        body : JSON.stringify(cleaningSchedule)
+    })
   }
 });
 
@@ -536,6 +540,18 @@ document.querySelector("#events .approve").addEventListener("click", async () =>
   const date = evDate.value;
   const desc = evDesc.value;
 
+  const event = {
+    title : name,
+    date : date,
+    description : desc
+  }
+
+  fetch('/api/Features/Events', {
+    method : 'POST',
+    headers : {'Content-Type' : 'application/json'},
+    body : JSON.stringify(event)
+  })
+
   if (!name || !date) return alert("Missing data");
 
   await API.publishEvent({ name, date, desc });
@@ -547,6 +563,21 @@ document.querySelector("#events .approve").addEventListener("click", async () =>
 
   evName.value = evDate.value = evDesc.value = "";
 });
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const response = await fetch('/api/Features/Events')
+  const data = await response.json()
+
+  console.log(data)
+  data.forEach(data => {
+  const date = new Date(data.event_date)
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `<strong>${data.title}</strong><br><small>${date.toLocaleDateString()}</small><p>${data.description}</p>`;
+  upcomingEventsList.prepend(card);
+  })
+})
 
 /* documentation*/
 fileInput.addEventListener("change", () => {

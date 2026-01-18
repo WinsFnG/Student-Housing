@@ -1,0 +1,167 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply - Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-y: auto;
+            font-family: 'Poppins', sans-serif;
+            background: #e8ebf2;
+        }
+
+        nav {
+            background: #3BA9D4;
+            display: flex;
+            justify-content: space-evenly;
+            padding: 10px 0;
+            font-size: 20px;
+            color: white;
+        }
+
+            nav a {
+                text-decoration: none;
+                color: white;
+                font-weight: 400;
+            }
+
+        .sub-nav {
+            background: #39b5ac;
+            height: 8px;
+        }
+
+        .main-content {
+            display: flex;
+            height: calc(100% - 68px);
+        }
+
+        .text-column {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+            .text-column h1 {
+                font-size: 32px;
+                margin-bottom: 20px;
+                color: #1E3A5F;
+            }
+
+            .text-column p {
+                font-size: 18px;
+                line-height: 1.5;
+                margin-bottom: 15px;
+                color: #111;
+            }
+
+        strong {
+            color: #1E3A5F;
+        }
+
+        .form-column {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .verification-form {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+            .verification-form input {
+                padding: 10px;
+                border-radius: 5px;
+                border: 1px solid #1E3A5F;
+            }
+
+            .verification-form button {
+                padding: 12px;
+                background: #1E3A5F;
+                color: white;
+                font-weight: 500;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+
+        .logo-fixed {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <a asp-controller="Home" asp-action="Application">Apply</a>
+        <a href="#">Services</a>
+        <a href="#">FAQ</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+    </nav>
+
+    <div class="sub-nav"></div>
+
+    <div class="main-content">
+        <div class="text-column">
+            <h1>Welcome to the BV Housing Portal</h1>
+            <p>This form allows you to verify your identity and connect to your <strong>BV Housing Portal</strong> account. Once approved by your landlord, you will gain access to a secure platform where you can:</p>
+            <p>- View and manage your <strong>shared housing schedule</strong> (who cleans, who takes out the trash, who did which shopping and for how much).</p>
+            <p>- Participate in <strong>house events</strong> and coordinate with other house members.</p>
+            <p>- <strong>Message your housemates</strong> directly within the portal.</p>
+            <p>- <strong>Report maintenance issues</strong> or other problems to your landlord.</p>
+            <p>- Receive <strong>notifications</strong> for important updates.</p>
+            <p>- Access an <strong>overview of all your documents</strong>, including invoices, contracts, and pending payments.</p>
+            <p><strong>The verification code can be found on the contract.</strong> By completing this form, you ensure that your account is correctly linked to your rental agreement.</p>
+        </div>
+
+        <div class="form-column">
+            <form asp-controller="Home" asp-action="Login" method="post" class="verification-form" id="applyForm">
+                <label for="dob">Name</label>
+                <input type="text" id="dob" name="name" placeholder="Enter your name" required>
+
+                <label for="first-name">Email</label>
+                <input type="text" id="first-name" name="email" placeholder="Enter your email" required>
+
+                <label for="last-name">Password</label>
+                <input type="password" id="last-name" name="password" placeholder="Password" required>
+
+                <label for="email">Confirm Password</label>
+                <input type="password" id="email" required placeholder="Confirm Password">
+
+                <label for="code">Verification Code</label>
+                <input type="text" id="code" name="vcode" required placeholder="Enter your code">
+
+                <button type="submit" id="submitBtn">Verify</button>
+                <div id="formStatus" style="display:none; font-size: 14px; text-align: center; margin-top: 5px;"></div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
+
